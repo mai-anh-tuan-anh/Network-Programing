@@ -1,0 +1,10 @@
+# JDK cài local
+oracleJdk-26/
+
+# Java compiled files
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+out/
