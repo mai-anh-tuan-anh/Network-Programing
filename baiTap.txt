@@ -1,0 +1,463 @@
+1. DATA 
+Nhận thông điệp là một chuỗi từ server theo định dạng requestId;a1,a2,...,a50
+requestId là chuỗi ngẫu nhiên duy nhất
+a1 -> a50 là 50 số nguyên ngẫu nhiên
+Thực hiện tìm giá trị lớn nhất và giá trị nhỏ nhất thông điệp trong a1 -> a50 và gửi thông điệp lên lên server theo định dạng requestId;max,min
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class hpjVRRSu{
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+
+        // Send data
+        String message = ";B23DCCE005;hpjVRRSu";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2207);
+        client.send(packet);
+        
+        // Receive data
+        byte[] buffer = new byte[1024];
+        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+        client.receive(responsePacket);
+        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+        System.out.println(response);
+
+        // Process data
+        String[] parts = response.split(";");
+        String requestID = parts[0];
+        String last = parts[1];
+        String[] numbers = last.split(",");
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        for (String num : numbers) {
+            int value = Integer.parseInt(num);
+            if (value > max) {
+                max = value;
+            }
+            if (value < min) {
+                min = value;
+            }
+        }
+
+        // Send response
+        String resultMessage = requestID + ";" + max + "," + min;
+        DatagramPacket resultPacket = new DatagramPacket(resultMessage.getBytes(), resultMessage.length(), InetAddress.getByName("36.50.135.242"), 2207);
+        client.send(resultPacket);
+
+        client.close();
+    }
+}
+
+
+2. STRING 
+b. Nhận thông điệp từ server theo định dạng requestId; data
+requestId là một chuỗi ngẫu nhiên duy nhất
+data là chuỗi dữ liệu đầu vào cần xử lý
+Ví dụ: requestId;Qnc8d5x78aldSGWWmaAAjyg3
+c. Tìm kiếm ký tự xuất hiện nhiều nhất trong chuỗi và gửi lên server theo định dạng “requestId;ký tự xuất hiện nhiều nhất: các vị trí xuất hiện ký tự đó”
+Ví dụ: requestId;8:4,9,
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class GIqGhWnD {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+        // Send data
+        String message = ";B23DCCE005;GIqGhWnD";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2208);
+        client.send(packet);
+
+        // Receive data
+        byte[] buffer = new byte[1024];
+        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+        client.receive(responsePacket);
+        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+
+        // Process data
+        String[] parts = response.split(";");
+        String requestId = parts[0];
+        String data = parts[1];
+
+        HashMap<Character, Integer> dataMap = new HashMap<>();
+        int maxCount = 0;
+        for (char c : data.toCharArray()) {
+            dataMap.put(c, dataMap.getOrDefault(c, 0) + 1);
+            maxCount = Math.max(maxCount, dataMap.get(c));
+        }
+        ArrayList<Integer> indices = new ArrayList<>();
+        Character c = null;
+        for (int i = 0; i < data.length(); i++){
+            if((c == null || data.charAt(i) == c) && (dataMap.get(data.charAt(i)) == maxCount)){
+                indices.add(i + 1);
+                c = data.charAt(i);
+            }
+        }
+        String res = requestId + ";" + c + ":";
+        for (int i = 0; i < indices.size(); i++){
+            res += indices.get(i);
+            res += ",";
+        }
+
+        DatagramPacket responseToSend = new DatagramPacket(res.getBytes(), res.length(), InetAddress.getByName("36.50.135.242"), 2208);
+        client.send(responseToSend);
+        
+        client.close();
+    }
+}
+
+3. DATA 
+b. Nhận thông điệp là một chuỗi từ server theo định dạng requestId;n;A1,A2,...An , với
+requestId là chuỗi ngẫu nhiên duy nhất
+n là một số ngẫu nhiên nhỏ hơn 100.
+A1, A2 ... Am (m <= n) là các giá trị ngẫu nhiên nhỏ hơn hoặc bằng n và có thể trùng nhau.
+Ví dụ: requestId;10;2,3,5,6,5
+c. Tìm kiếm các giá trị còn thiếu và gửi lên server theo định dạng requestId;B1,B2,...,Bm
+Ví dụ: requestId;1,4,7,8,9,10
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.HashSet;
+
+public class czv3euUe {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+        
+        // Send data
+        String message = ";B23DCCE005;czv3euUe";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2207);
+        client.send(packet);
+
+        // Receive data
+        byte[] buffer = new byte[1024];
+        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+        client.receive(responsePacket);
+        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+        
+        // Process data
+        String[] parts = response.split(";");
+        String requestId = parts[0].trim();
+        int n = Integer.parseInt(parts[1].trim());
+        String[] nums = parts[2].split(",");
+        HashSet<Integer> numsSet = new HashSet<>();
+        for (String num : nums) {
+            numsSet.add(Integer.parseInt(num.trim()));
+        }
+
+        String res = requestId + ";";
+        for (int i = 1; i <= n; i++) {
+            if (!numsSet.contains(i)) {
+                res += i + ",";
+            }
+        }
+        res = res.substring(0, res.length() - 1); // Remove trailing comma
+        DatagramPacket resultPacket = new DatagramPacket(res.getBytes(), res.length(), InetAddress.getByName("36.50.135.242"), 2207);
+        client.send(resultPacket);
+
+        client.close();
+    }
+}
+
+4. STRING 
+b. Nhận thông điệp từ server theo định dạng requestId;data
+requestId là một chuỗi ngẫu nhiên duy nhất
+data là chuỗi dữ liệu cần xử lý
+c. Xử lý chuẩn hóa chuỗi đã nhận thành theo nguyên tắc
+Ký tự đầu tiên của từng từ trong chuỗi là in hoa
+Các ký tự còn lại của chuỗi là in thường Gửi thông điệp chứa chuỗi đã được chuẩn hóa lên server theo định dạng requestId;data
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class cfXBFx5T {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+
+        //Send data
+        String message = ";B23DCCE005;cfXBFx5T";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2208);
+        client.send(packet);
+
+        // Receive data
+        byte[] buffer = new byte[1024];
+        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+        client.receive(responsePacket);
+        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+
+        //Process data
+        String[] parts = response.split(";");
+        String requestID = parts[0].trim();
+        String data = parts[1].trim();
+
+        String[] arr = data.split(" ");
+        for(int i = 0; i < arr.length; i++) {
+            arr[i] = arr[i].substring(0, 1).toUpperCase() + arr[i].substring(1).toLowerCase();
+        }
+        String result = requestID + ";" + String.join(" ", arr);
+
+        DatagramPacket resultPacket = new DatagramPacket(result.getBytes(), result.length(), InetAddress.getByName("36.50.135.242"), 2208);
+        client.send(resultPacket);
+
+        client.close();
+    }
+}
+5. Object
+b. Nhận thông điệp chứa: 08 byte đầu chứa chuỗi requestId, các byte còn lại chứa một đối tượng là thể hiện của lớp Student từ server. Trong đó, các thông tin được thiết lập gồm id và name.
+c. Yêu cầu:
+Chuẩn hóa tên theo quy tắc: Chữ cái đầu tiên in hoa, các chữ cái còn lại in thường và gán lại thuộc tính name của đối tượng
+Tạo email ptit.edu.vn từ tên người dùng bằng cách lấy tên và các chữ cái bắt đầu của họ và tên đệm.
+Ví dụ: nguyen van tuan nam -> namnvt@ptit.edu.vn. Gán giá trị này cho thuộc tính email của đối tượng nhận được
+Gửi thông điệp chứa đối tượng xử lý ở bước c lên Server với cấu trúc: 08 byte đầu chứa chuỗi requestId và các byte còn lại chứa đối tượng Student đã được sửa đổi.
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+import UDP.Student;
+
+public class Uft7BuJX {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+
+        // Send data
+        String message = ";B23DCCE005;Uft7BuJX";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2209);
+        client.send(packet);
+
+        // Receive data
+        byte[] buffer = new byte[4096];
+        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+        client.receive(responsePacket);
+        String requestId = new String(responsePacket.getData(), 0, 8);
+        ByteArrayInputStream bis = new ByteArrayInputStream(
+        responsePacket.getData(),
+        8,
+        responsePacket.getLength() - 8);
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        Student student = (Student) ois.readObject();
+
+        //Process data
+        String name = student.getName();
+        System.err.println(name);
+        String[] arr = name.split(" ");
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = arr[i].substring(0,1).toUpperCase() + arr[i].substring(1).toLowerCase();
+        }
+        student.setName(String.join(" ", arr));
+
+        StringBuilder email = new StringBuilder();
+        for(int i = 0; i < arr.length - 1; i++){
+            email.append(arr[i].substring(0,1).toLowerCase());
+        }
+        email.append("@ptit.edu.vn");
+        email.insert(0, arr[arr.length - 1].toLowerCase());
+        student.setEmail(email.toString());
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(student);
+        oos.flush();
+
+        byte[] studentBytes = bos.toByteArray();
+        byte[] requestIdBytes = requestId.getBytes();
+
+        byte[] data = new byte[8 + studentBytes.length];
+
+        System.arraycopy(requestIdBytes, 0, data, 0, 8);
+        System.arraycopy(studentBytes, 0, data, 8, studentBytes.length);
+
+        DatagramPacket resPacket = new DatagramPacket(data, data.length,InetAddress.getByName("36.50.135.242"), 2209);
+        client.send(resPacket);
+
+        client.close();
+    }
+}
+package UDP;
+import java.io.Serializable;
+
+public class Student implements Serializable {
+    private static final long serialVersionUID = 20171107;
+
+    private String id;
+    private String code;
+    private String name;
+    private String email;
+
+    public Student(String id, String code, String name, String email) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.email = email;
+    }
+    public Student(String code) {
+        this.code = code;
+    }
+    
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override 
+    public String toString() {
+        return "Student [id=" + id + ", code=" + code + ", name=" + name + ", email=" + email + "]";
+    }
+}
+
+6. Object
+import UDP.Customer;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class q6i3yiGQv {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket client = new DatagramSocket();
+
+        // Send data
+        String message = ";B23DCCE005;6i3yiGQv";
+        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2209);
+        client.send(packet);
+
+        // Receive data
+        byte[] bytes = new byte[4096];
+        DatagramPacket responsePacket = new DatagramPacket(bytes, bytes.length);
+        client.receive(responsePacket);
+
+        String requestID = new String(responsePacket.getData(), 0, 8);
+        ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 8, responsePacket.getLength() - 8);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Customer customer = (Customer) ois.readObject();
+
+        // Process data
+        String name = customer.getName();
+        String dob = customer.getDayOfBirth();
+        String[] arr = name.split(" ");
+
+        // a
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < arr.length - 1; i++){
+            sb.append(arr[i].substring(0,1).toUpperCase() + arr[i].substring(1).toLowerCase() + " ");
+        }
+        sb.insert(0, arr[arr.length - 1].toUpperCase() + ", ");
+        customer.setName(sb.toString().trim());
+
+        // b
+        String[] Date = dob.split("-");
+        customer.setDayOfBirth(Date[1] + "/" + Date[0] + "/" + Date[2]);
+
+        // c
+        sb = new StringBuilder();
+        for(int i = 0; i < arr.length - 1; i++){
+            sb.append(arr[i].toLowerCase().charAt(0));
+        }
+        sb.append(arr[arr.length - 1].toLowerCase());
+        customer.setUserName(sb.toString().trim());
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(customer);
+        oos.flush();
+        
+        byte[] requestIdBytes = requestID.getBytes();
+        byte[] customerBytes = baos.toByteArray();
+        byte[] data = new byte[8 + customerBytes.length];
+        System.arraycopy(requestIdBytes, 0, data, 0, 8);
+        System.arraycopy(customerBytes,  0, data, 8, customerBytes.length);
+
+        DatagramPacket result = new DatagramPacket(data, data.length, InetAddress.getByName("36.50.135.242"), 2209);
+        client.send(result);
+
+        client.close();
+    }
+}
+
+package UDP;
+
+import java.io.Serializable;
+
+public class Customer implements Serializable {
+    private static final long serialVersionUID = 20151107;
+
+    private String id;
+    private String code;
+    private String name;
+    private String dayOfBirth;
+    private String userName;
+    
+    Customer(String id, String code, String name, String dayOfBirth, String userName) {
+        this.id = id;
+        this.code = code;
+        this.name = name;
+        this.dayOfBirth = dayOfBirth;
+        this.userName = userName;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getId() {
+        return id;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setDayOfBirth(String dayOfBirth) {
+        this.dayOfBirth = dayOfBirth;
+    }
+    public String getDayOfBirth() {
+        return dayOfBirth;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    @Override 
+    public String toString() {
+        return "Customer{" + "id=" + id + ", name=" + name + ", dayOfBirth=" + dayOfBirth + ", userName=" + userName + '}';
+    }
+}
