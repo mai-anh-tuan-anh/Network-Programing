@@ -1,0 +1,434 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by XML-WS Runtime (https://github.com/eclipse-ee4j/metro-jax-ws). Runtime's version is XML-WS Runtime 4.0.2 git-revision#0264419. --><xs:schema xmlns:tns="http://soap.server.network.judge.dblab.ptit/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://soap.server.network.judge.dblab.ptit/">
+
+<xs:element name="Customer" type="tns:customer"/>
+
+<xs:element name="CustomerY" type="tns:customerY"/>
+
+<xs:element name="Employee" type="tns:employee"/>
+
+<xs:element name="EmployeeY" type="tns:employeeY"/>
+
+<xs:element name="Order" type="tns:order"/>
+
+<xs:element name="OrderY" type="tns:orderY"/>
+
+<xs:element name="ProductY" type="tns:productY"/>
+
+<xs:element name="Project" type="tns:project"/>
+
+<xs:element name="Student" type="tns:student"/>
+
+<xs:element name="StudentY" type="tns:studentY"/>
+
+<xs:element name="requestEmployee" type="tns:requestEmployee"/>
+
+<xs:element name="requestEmployeeResponse" type="tns:requestEmployeeResponse"/>
+
+<xs:element name="requestListCustomer" type="tns:requestListCustomer"/>
+
+<xs:element name="requestListCustomerResponse" type="tns:requestListCustomerResponse"/>
+
+<xs:element name="requestListCustomerY" type="tns:requestListCustomerY"/>
+
+<xs:element name="requestListCustomerYResponse" type="tns:requestListCustomerYResponse"/>
+
+<xs:element name="requestListEmployeeY" type="tns:requestListEmployeeY"/>
+
+<xs:element name="requestListEmployeeYResponse" type="tns:requestListEmployeeYResponse"/>
+
+<xs:element name="requestListOrder" type="tns:requestListOrder"/>
+
+<xs:element name="requestListOrderResponse" type="tns:requestListOrderResponse"/>
+
+<xs:element name="requestListOrderY" type="tns:requestListOrderY"/>
+
+<xs:element name="requestListOrderYResponse" type="tns:requestListOrderYResponse"/>
+
+<xs:element name="requestListProject" type="tns:requestListProject"/>
+
+<xs:element name="requestListProjectResponse" type="tns:requestListProjectResponse"/>
+
+<xs:element name="requestListStudent" type="tns:requestListStudent"/>
+
+<xs:element name="requestListStudentResponse" type="tns:requestListStudentResponse"/>
+
+<xs:element name="requestListStudentY" type="tns:requestListStudentY"/>
+
+<xs:element name="requestListStudentYResponse" type="tns:requestListStudentYResponse"/>
+
+<xs:element name="requestProductY" type="tns:requestProductY"/>
+
+<xs:element name="requestProductYResponse" type="tns:requestProductYResponse"/>
+
+<xs:element name="submitEmployee" type="tns:submitEmployee"/>
+
+<xs:element name="submitEmployeeResponse" type="tns:submitEmployeeResponse"/>
+
+<xs:element name="submitListCustomer" type="tns:submitListCustomer"/>
+
+<xs:element name="submitListCustomerResponse" type="tns:submitListCustomerResponse"/>
+
+<xs:element name="submitListCustomerY" type="tns:submitListCustomerY"/>
+
+<xs:element name="submitListCustomerYResponse" type="tns:submitListCustomerYResponse"/>
+
+<xs:element name="submitListEmployeeY" type="tns:submitListEmployeeY"/>
+
+<xs:element name="submitListEmployeeYResponse" type="tns:submitListEmployeeYResponse"/>
+
+<xs:element name="submitListOrder" type="tns:submitListOrder"/>
+
+<xs:element name="submitListOrderResponse" type="tns:submitListOrderResponse"/>
+
+<xs:element name="submitListOrderY" type="tns:submitListOrderY"/>
+
+<xs:element name="submitListOrderYResponse" type="tns:submitListOrderYResponse"/>
+
+<xs:element name="submitListProject" type="tns:submitListProject"/>
+
+<xs:element name="submitListProjectResponse" type="tns:submitListProjectResponse"/>
+
+<xs:element name="submitListStudent" type="tns:submitListStudent"/>
+
+<xs:element name="submitListStudentResponse" type="tns:submitListStudentResponse"/>
+
+<xs:element name="submitListStudentY" type="tns:submitListStudentY"/>
+
+<xs:element name="submitListStudentYResponse" type="tns:submitListStudentYResponse"/>
+
+<xs:element name="submitProductY" type="tns:submitProductY"/>
+
+<xs:element name="submitProductYResponse" type="tns:submitProductYResponse"/>
+
+<xs:complexType name="requestEmployee">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestEmployeeResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:employee" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="employee">
+<xs:sequence>
+<xs:element name="endDate" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="startDate" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="workingDays" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitProductY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:productY" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="productY">
+<xs:sequence>
+<xs:element name="discount" type="xs:float"/>
+<xs:element name="finalPrice" type="xs:float"/>
+<xs:element name="price" type="xs:float"/>
+<xs:element name="taxRate" type="xs:float"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitProductYResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="submitListStudentY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:studentY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="studentY">
+<xs:sequence>
+<xs:element name="name" type="xs:string" minOccurs="0"/>
+<xs:element name="score" type="xs:float"/>
+<xs:element name="studentId" type="xs:string" minOccurs="0"/>
+<xs:element name="subject" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListStudentYResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListStudent">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListStudentResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:student" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="student">
+<xs:sequence>
+<xs:element name="name" type="xs:string" minOccurs="0"/>
+<xs:element name="score" type="xs:float"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListStudent">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:student" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListStudentResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListOrder">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListOrderResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:order" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="order">
+<xs:sequence>
+<xs:element name="amount" type="xs:float"/>
+<xs:element name="customerId" type="xs:string" minOccurs="0"/>
+<xs:element name="status" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListCustomer">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListCustomerResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:customer" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="customer">
+<xs:sequence>
+<xs:element name="customerId" type="xs:string" minOccurs="0"/>
+<xs:element name="location" type="xs:string" minOccurs="0"/>
+<xs:element name="purchaseCount" type="xs:int"/>
+<xs:element name="totalSpent" type="xs:float"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestProductY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestProductYResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:productY" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitEmployee">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:employee" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitEmployeeResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListCustomerY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListCustomerYResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:customerY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="customerY">
+<xs:sequence>
+<xs:element name="customerId" type="xs:string" minOccurs="0"/>
+<xs:element name="lastTransactionDate" type="xs:dateTime" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListOrderY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:orderY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="orderY">
+<xs:sequence>
+<xs:element name="customerId" type="xs:string" minOccurs="0"/>
+<xs:element name="orderDate" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="orderId" type="xs:string" minOccurs="0"/>
+<xs:element name="status" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListOrderYResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListProject">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListProjectResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:project" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="project">
+<xs:sequence>
+<xs:element name="completionPercentage" type="xs:float"/>
+<xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="projectId" type="xs:string" minOccurs="0"/>
+<xs:element name="projectName" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListCustomerY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:customerY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListCustomerYResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListEmployeeY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListEmployeeYResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:employeeY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="employeeY">
+<xs:sequence>
+<xs:element name="name" type="xs:string" minOccurs="0"/>
+<xs:element name="startDate" type="xs:dateTime" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListCustomer">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:customer" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListCustomerResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="submitListEmployeeY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:employeeY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListEmployeeYResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListOrderY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListOrderYResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:orderY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListOrder">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:order" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListOrderResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="requestListStudentY">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="requestListStudentYResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:studentY" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListProject">
+<xs:sequence>
+<xs:element name="studentCode" type="xs:string" minOccurs="0"/>
+<xs:element name="qCode" type="xs:string" minOccurs="0"/>
+<xs:element name="data" type="tns:project" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="submitListProjectResponse">
+<xs:sequence/>
+</xs:complexType>
+</xs:schema>

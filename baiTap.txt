@@ -1,463 +1,3642 @@
-1. DATA 
-Nhận thông điệp là một chuỗi từ server theo định dạng requestId;a1,a2,...,a50
-requestId là chuỗi ngẫu nhiên duy nhất
-a1 -> a50 là 50 số nguyên ngẫu nhiên
-Thực hiện tìm giá trị lớn nhất và giá trị nhỏ nhất thông điệp trong a1 -> a50 và gửi thông điệp lên lên server theo định dạng requestId;max,min
+I. RMI
+1.  Tìm phần tử có số lần xuất hiện ít nhất trong mảng, nếu có nhiều phần tử có cùng số lần xuất hiện ít nhất, chỉ cần trả về phần tử đầu tiên xuất hiện trong các phần tử đó
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+Ví dụ: Nếu mảng dữ liệu nhận được là [1, 2, 3, 2, 1], chương trình sẽ tìm ra phần tử xuất hiện ít nhất là 3 (xuất hiện 1 lần), nên mảng gửi lên server là [3, 1].
 
-public class hpjVRRSu{
-    public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
+package RMI;
 
-        // Send data
-        String message = ";B23DCCE005;hpjVRRSu";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2207);
-        client.send(packet);
-        
-        // Receive data
-        byte[] buffer = new byte[1024];
-        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-        client.receive(responsePacket);
-        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
-        System.out.println(response);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-        // Process data
-        String[] parts = response.split(";");
-        String requestID = parts[0];
-        String last = parts[1];
-        String[] numbers = last.split(",");
-        int max = Integer.MIN_VALUE;
-        int min = Integer.MAX_VALUE;
-        for (String num : numbers) {
-            int value = Integer.parseInt(num);
-            if (value > max) {
-                max = value;
+public interface ByteService extends Remote {
+    public byte[] requestData(String studentCode, String qCode) throws RemoteException;
+    public void submitData(String studentCode, String qCode, byte[] data) throws RemoteException;
+}
+
+import RMI.ByteService;
+import java.rmi.Naming;
+
+public class QORPF8AZ {
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "QORPF8AZ";
+
+        try {
+            ByteService service = (ByteService) Naming.lookup(
+                    "rmi://36.50.135.242/RMIByteService"
+            );
+
+            byte[] data = service.requestData(studentCode, qCode);
+            int[] numbers = new int[data.length];
+            for (int i = 0; i < data.length; i++) {
+                numbers[i] = data[i];
             }
-            if (value < min) {
-                min = value;
+
+            int result = numbers[0];
+            int minCount = numbers.length;
+            for (int number : numbers) {
+                int count = 0;
+                for (int x : numbers) {
+                    if (number == x) {
+                        count++;
+                    }
+                }
+                if (count < minCount) {
+                    minCount = count;
+                    result = number;
+                }
             }
+
+            byte[] resultData = {
+                    (byte) result,
+                    (byte) minCount
+            };
+
+            service.submitData(studentCode, qCode, resultData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // Send response
-        String resultMessage = requestID + ";" + max + "," + min;
-        DatagramPacket resultPacket = new DatagramPacket(resultMessage.getBytes(), resultMessage.length(), InetAddress.getByName("36.50.135.242"), 2207);
-        client.send(resultPacket);
-
-        client.close();
     }
 }
 
 
-2. STRING 
-b. Nhận thông điệp từ server theo định dạng requestId; data
-requestId là một chuỗi ngẫu nhiên duy nhất
-data là chuỗi dữ liệu đầu vào cần xử lý
-Ví dụ: requestId;Qnc8d5x78aldSGWWmaAAjyg3
-c. Tìm kiếm ký tự xuất hiện nhiều nhất trong chuỗi và gửi lên server theo định dạng “requestId;ký tự xuất hiện nhiều nhất: các vị trí xuất hiện ký tự đó”
-Ví dụ: requestId;8:4,9,
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+
+2.Tìm phần tử xuất hiện nhiều nhất trong mảng byte[]. Nếu có nhiều phần tử có cùng số lần xuất hiện cao nhất, chỉ cần trả về phần tử đầu tiên xuất hiện trong các phần tử đó.
+
+Ví dụ: Nếu mảng dữ liệu nhận được là [1, 2, 3, 2, 1, 2], phần tử xuất hiện nhiều nhất là 2, với tần suất xuất hiện 3 lần, nên mảng gửi lên server là [2, 3].
+
+import RMI.ByteService;
+import java.rmi.Naming;
+
+public class j6XnHOs7 {
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "j6XnHOs7";
+        try {
+            ByteService service = (ByteService) Naming.lookup(
+                    "rmi://36.50.135.242/RMIByteService"
+            );
+            byte[] data = service.requestData(studentCode, qCode);
+            int[] numbers = new int[data.length];
+            for (int i = 0; i < data.length; i++) {
+                numbers[i] = data[i];
+            }
+
+            int result = numbers[0];
+            int maxCount = 0;
+            for (int i = 0; i < numbers.length; i++) {
+                int count = 0;
+                for (int j = 0; j < numbers.length; j++) {
+                    if (numbers[i] == numbers[j]) {
+                        count++;
+                    }
+                }
+                if (count > maxCount) {
+                    maxCount = count;
+                    result = numbers[i];
+                }
+            }
+
+            byte[] resultData = {
+                    (byte) result,
+                    (byte) maxCount
+            };
+            service.submitData(studentCode, qCode, resultData);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+3. Thực hiện thao tác mã hóa URL (URL Encoding) cho chuỗi đầu vào nhận được từ server. Mã hóa theo quy tắc phần đường dẫn của URI (tương đương new java.net.URI(null, null, s, null).toASCIIString()): dấu cách, ký tự không hợp lệ trong URI (như % " < > [ ] { } | \ ^), ?, # và ký tự ngoài ASCII được thay bằng %XX (UTF-8); chữ, số và - _ . ~ ! * ' ( ) ; : @ & = + $ , / giữ nguyên.
+
+Ví dụ: Chuỗi ban đầu "Hello World!" -> Chuỗi mã hóa URL là: "Hello%20World!"
+
+package RMI;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface CharacterService extends Remote {
+    public String requestCharacter(String studentCode, String qCode) throws RemoteException;
+    public void submitCharacter(String studentCode, String qCode, String strSubmit) throws RemoteException;
+}
+import RMI.CharacterService;
+import java.net.URI;
+import java.rmi.Naming;
+
+public class oQUc7CIB {
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "oQUc7CIB";
+
+        try {
+            CharacterService service = (CharacterService) Naming.lookup(
+                    "rmi://36.50.135.242/RMICharacterService"
+            );
+
+            String s = service.requestCharacter(studentCode, qCode);
+
+            String result = new URI(null, null, s, null).toASCIIString();
+
+            service.submitCharacter(studentCode, qCode, result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+4.Thực hiện chuyển đổi số thập phân nhận được thành chuỗi số La Mã (Roman).
+
+Quy tắc chuyển đổi:
+
+Các ký tự La Mã chính bao gồm: I=1, V=5, X=10, L=50, C=100, D=500, M=1000.
+
+Ví dụ: 58 -> "LVIII"
+
+import RMI.CharacterService;
+import java.rmi.Naming;
+
+public class y15Ydx1c {
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "y15Ydx1c";
+
+        try {
+            CharacterService service = (CharacterService) Naming.lookup(
+                    "rmi://36.50.135.242/RMICharacterService"
+            );
+
+            String s = service.requestCharacter(studentCode, qCode);
+            int number = Integer.parseInt(s);
+
+            int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+            String[] symbols = {
+                    "M", "CM", "D", "CD", "C", "XC",
+                    "L", "XL", "X", "IX", "V", "IV", "I"
+            };
+
+            String roman = "";
+
+            for (int i = 0; i < values.length; i++) {
+                while (number >= values[i]) {
+                    roman += symbols[i];
+                    number -= values[i];
+                }
+            }
+
+            service.submitCharacter(studentCode, qCode, roman);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+5. b. Triệu gọi requestData(studentCode, qCode) để nhận một mảng số nguyên từ server. Ví dụ: [3,8,5,10,7].
+
+c. Một phần tử là đỉnh cục bộ nếu lớn hơn phần tử liền kề bên trái và bên phải; phần tử đầu/cuối chỉ cần lớn hơn phần tử kề duy nhất. Trả về vị trí theo chỉ số bắt đầu từ 1.
+
+package RMI;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface DataService extends Remote {                               
+        public Object requestData(String studentCode, String qCode) throws RemoteException;              
+        public void submitData(String studentCode, String qCode, Object data) throws RemoteException;    
+    }
+
+import RMI.DataService;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
-public class GIqGhWnD {
-    public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
-        // Send data
-        String message = ";B23DCCE005;GIqGhWnD";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2208);
-        client.send(packet);
+public class MU2M7g3r {
 
-        // Receive data
-        byte[] buffer = new byte[1024];
-        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-        client.receive(responsePacket);
-        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "MU2M7g3r";
 
-        // Process data
-        String[] parts = response.split(";");
-        String requestId = parts[0];
-        String data = parts[1];
+        try {
+            Registry registry = LocateRegistry.getRegistry(
+                    "36.50.135.242", 1099
+            );
 
-        HashMap<Character, Integer> dataMap = new HashMap<>();
-        int maxCount = 0;
-        for (char c : data.toCharArray()) {
-            dataMap.put(c, dataMap.getOrDefault(c, 0) + 1);
-            maxCount = Math.max(maxCount, dataMap.get(c));
+            DataService service = (DataService)
+                    registry.lookup("RMIDataService");
+
+            Object data = service.requestData(studentCode, qCode);
+
+            if (data == null) {
+                System.out.println("Server tra ve NULL!");
+                System.out.println("Kiem tra studentCode va qCode.");
+                return;
+            }
+
+            if (!(data instanceof int[])) {
+                System.out.println("Sai kieu du lieu: "
+                        + data.getClass().getName());
+                return;
+            }
+
+            int[] arr = (int[]) data;
+            System.out.println("Mang nhan duoc: "
+                    + Arrays.toString(arr));
+
+            List<Integer> result = new ArrayList<>();
+
+            for (int i = 0; i < arr.length; i++) {
+                boolean left = (i == 0 || arr[i] > arr[i - 1]);
+                boolean right = (i == arr.length - 1 || arr[i] > arr[i + 1]);
+
+                if (left && right) {
+                    result.add(i + 1);
+                }
+            }
+
+            System.out.println("Cac vi tri dinh cuc bo: " + result);
+
+            service.submitData(studentCode, qCode, result);
+
+            System.out.println("Da gui ket qua len server!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        ArrayList<Integer> indices = new ArrayList<>();
-        Character c = null;
-        for (int i = 0; i < data.length(); i++){
-            if((c == null || data.charAt(i) == c) && (dataMap.get(data.charAt(i)) == maxCount)){
-                indices.add(i + 1);
-                c = data.charAt(i);
+    }
+}
+
+
+
+6.Triệu gọi requestData(studentCode, qCode) để nhận chuỗi CSV các số thực. Ví dụ: 10.00,20.00,30.00,40.00.
+
+c. Tính giá trị trung bình, độ lệch chuẩn trên toàn bộ dãy và phân vị 95 tại vị trí ceil(n * 0.95) - 1 sau khi sắp xếp tăng dần.
+
+package RMI;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface DataService extends Remote {                               
+        public Object requestData(String studentCode, String qCode) throws RemoteException;              
+        public void submitData(String studentCode, String qCode, Object data) throws RemoteException;    
+    }
+
+import RMI.DataService;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.Arrays;
+
+public class tzqzJy7j {
+
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "tzqzJy7j";
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(
+                    "36.50.135.242", 1099
+            );
+
+            DataService service = (DataService)
+                    registry.lookup("RMIDataService");
+
+            Object data = service.requestData(studentCode, qCode);
+
+            if (data == null) {
+                System.out.println("Server tra ve NULL!");
+                return;
+            }
+
+            String csv = (String) data;
+            System.out.println("Du lieu: " + csv);
+
+            String[] parts = csv.split(",");
+            int n = parts.length;
+
+            double[] arr = new double[n];
+            BigDecimal sum = BigDecimal.ZERO;
+
+            for (int i = 0; i < n; i++) {
+                BigDecimal value = new BigDecimal(parts[i].trim());
+                arr[i] = value.doubleValue();
+                sum = sum.add(value);
+            }
+
+            // Tinh trung binh chinh xac
+            BigDecimal avgBD = sum.divide(
+                    BigDecimal.valueOf(n),
+                    15,
+                    RoundingMode.HALF_UP
+            );
+
+            double average = avgBD.doubleValue();
+
+            // Tinh do lech chuan tong the
+            double variance = 0;
+            for (double x : arr) {
+                variance += Math.pow(x - average, 2);
+            }
+            double stddev = Math.sqrt(variance / n);
+
+            // Tinh phan vi 95
+            Arrays.sort(arr);
+            int index = (int) Math.ceil(n * 0.95) - 1;
+            double p95 = arr[index];
+
+            // Lam tron HALF_UP
+            String avgStr = avgBD.setScale(
+                    2, RoundingMode.HALF_UP
+            ).toPlainString();
+
+            String stdStr = BigDecimal.valueOf(stddev)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .toPlainString();
+
+            String p95Str = BigDecimal.valueOf(p95)
+                    .setScale(2, RoundingMode.HALF_UP)
+                    .toPlainString();
+
+            String result = "average=" + avgStr
+                    + ";stddev=" + stdStr
+                    + ";p95=" + p95Str;
+
+            System.out.println("Ket qua: " + result);
+
+            service.submitData(studentCode, qCode, result);
+
+            System.out.println("Da gui ket qua len server!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+7.Triệu gọi requestObject(studentCode, qCode) để nhận đối tượng RMI.TicketSla. Ví dụ: priority=HIGH; openedHoursAgo=10.
+
+c. Thiết lập breached = true khi vượt ngưỡng theo priority:
+
+CRITICAL: openedHoursAgo > 2
+HIGH: openedHoursAgo > 8
+MEDIUM: openedHoursAgo > 24
+LOW: openedHoursAgo > 72
+Thiết lập action:
+
+MONITOR nếu không vi phạm
+ESCALATE_L2 nếu vi phạm và (priority là CRITICAL hoặc openedHoursAgo > 96)
+ESCALATE_L1 cho các trường hợp vi phạm còn lại
+
+package RMI;
+
+public interface ObjectService extends java.rmi.Remote {
+    java.io.Serializable requestObject(String studentCode, String qCode) throws java.rmi.RemoteException;
+    void submitObject(String studentCode, String qCode, java.io.Serializable object) throws java.rmi.RemoteException;
+}
+
+
+package RMI;
+
+public class TicketSla implements java.io.Serializable {
+    private static final long serialVersionUID = 20260517L;
+
+    private String ticketId;
+    private String priority;
+    private int openedHoursAgo;
+    private boolean breached;
+    private String action;
+
+    public TicketSla() {}
+
+    public TicketSla(String ticketId, String priority, int openedHoursAgo) {
+        this.ticketId = ticketId;
+        this.priority = priority;
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public int getOpenedHoursAgo() {
+        return openedHoursAgo;
+    }
+
+    public void setOpenedHoursAgo(int openedHoursAgo) {
+        this.openedHoursAgo = openedHoursAgo;
+    }
+
+    public boolean isBreached() {
+        return breached;
+    }
+
+    public void setBreached(boolean breached) {
+        this.breached = breached;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+}
+
+import RMI.ObjectService;
+import RMI.TicketSla;
+
+import java.rmi.Naming;
+
+public class q7cAs0tuJ {
+    public static void main(String[] args) {
+        String studentCode = "B23DCCE005";
+        String qCode = "7cAs0tuJ";
+
+        try {
+            ObjectService service =
+                    (ObjectService) Naming.lookup(
+                            "rmi://36.50.135.242/RMIObjectService"
+                    );
+
+            TicketSla ticket =
+                    (TicketSla) service.requestObject(studentCode, qCode);
+
+            String priority = ticket.getPriority();
+            int hours = ticket.getOpenedHoursAgo();
+
+            boolean breached = false;
+
+            switch (priority) {
+                case "CRITICAL":
+                    breached = hours > 2;
+                    break;
+                case "HIGH":
+                    breached = hours > 8;
+                    break;
+                case "MEDIUM":
+                    breached = hours > 24;
+                    break;
+                case "LOW":
+                    breached = hours > 72;
+                    break;
+            }
+
+            ticket.setBreached(breached);
+
+            if (!breached) {
+                ticket.setAction("MONITOR");
+            } else if (priority.equals("CRITICAL") || hours > 96) {
+                ticket.setAction("ESCALATE_L2");
+            } else {
+                ticket.setAction("ESCALATE_L1");
+            }
+
+            service.submitObject(studentCode, qCode, ticket);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+II. WS
+1.Một dịch vụ web (hỗ trợ SOAP version 1.1) được định nghĩa và mô tả trong tệp DataService?wsdl, được triển khai trên server tại URL http://<Exam_IP>:2221/DataService?wsdl để xử lý các bài toán với dữ liệu nguyên thủy.
+
+Yêu cầu: Viết chương trình tại máy trạm (WS client) để giao tiếp với DataService thực hiện các công việc sau:
+
+a. Triệu gọi phương thức getData với tham số đầu vào là mã sinh viên (studentCode) và mã câu hỏi (qCode) để nhận về một danh sách số nguyên (List<Integer>) từ server.
+
+Ví dụ: 7602,9136,1090,34319,7830,6179,10584,20166,28199,30250,32179,22544,3222,10320,30590,19279
+
+b. Thực hiện tìm số lớn nhất có thể tạo dược từ a,b,c,d...
+
+c. Triệu gọi phương thức submitDataString(String studentCode, String qCode, String data) để gửi kết quả tổng đã tính được trở lại server.
+
+Ví dụ: 91367830760261793431932223217930590302502819922544201661927910901058410320
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+public class RriwlduN {
+
+    // ============================================================
+    // 1. CONFIGURATION: Cau hinh Web Service
+    // ============================================================
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/DataService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "RriwlduN";
+
+    public static void main(String[] args) throws Exception {
+
+        // ========================================================
+        // 2. INPUT: Lay du lieu tu server
+        // ========================================================
+        List<Integer> numbers = getData(STUDENT_CODE, QUESTION_CODE);
+
+        System.out.println("Input data: " + numbers);
+
+        // ========================================================
+        // 3. ALGORITHM: Ghep cac so de tao so lon nhat
+        // Thay phan nay bang thuat toan cua cau hoi khac.
+        // ========================================================
+        List<String> parts = new ArrayList<>();
+
+        for (Integer number : numbers) {
+            parts.add(String.valueOf(number));
+        }
+
+        parts.sort((a, b) -> (b + a).compareTo(a + b));
+
+        StringBuilder answerBuilder = new StringBuilder();
+
+        for (String part : parts) {
+            answerBuilder.append(part);
+        }
+
+        String answer = answerBuilder.toString();
+
+        System.out.println("Result: " + answer);
+
+        // ========================================================
+        // 4. OUTPUT: Gui ket qua ve server
+        // ========================================================
+        submitDataString(STUDENT_CODE, QUESTION_CODE, answer);
+
+        System.out.println("Submission completed.");
+    }
+
+    // ============================================================
+    // SOAP HELPER: Gui SOAP request va nhan XML response
+    // Ham nay co the tai su dung cho cac bai SOAP cung kieu.
+    // ============================================================
+    static Document callSoap(String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(ENDPOINT).openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty(
+                "Content-Type", "text/xml; charset=utf-8");
+
+        connection.setRequestProperty("SOAPAction", "\"\"");
+
+        try {
+            // Gui request den Web Service.
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(requestXml.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            InputStream responseStream =
+                    (statusCode >= 200 && statusCode < 300)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+            if (responseStream == null) {
+                throw new IOException(
+                        "No response body. HTTP status: " + statusCode);
+            }
+
+            // Parse XML response va vo hieu hoa external entities.
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = responseStream) {
+                response = factory.newDocumentBuilder().parse(input);
+            }
+
+            // Kiem tra loi SOAP tu server.
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: " + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    // ============================================================
+    // INPUT: getData(studentCode, qCode) -> List<Integer>
+    // Doi ham nay neu bai khac co phuong thuc input khac.
+    // ============================================================
+    static List<Integer> getData(
+            String studentCode, String questionCode) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>";
+
+        Document response = callSoap("getData", parametersXml);
+
+        NodeList returnNodes =
+                response.getElementsByTagNameNS("*", "return");
+
+        List<Integer> numbers = new ArrayList<>();
+
+        for (int i = 0; i < returnNodes.getLength(); i++) {
+            String value =
+                    returnNodes.item(i).getTextContent().trim();
+
+            if (!value.isEmpty()) {
+                numbers.add(Integer.parseInt(value));
             }
         }
-        String res = requestId + ";" + c + ":";
-        for (int i = 0; i < indices.size(); i++){
-            res += indices.get(i);
-            res += ",";
-        }
 
-        DatagramPacket responseToSend = new DatagramPacket(res.getBytes(), res.length(), InetAddress.getByName("36.50.135.242"), 2208);
-        client.send(responseToSend);
-        
-        client.close();
+        return numbers;
+    }
+
+    // ============================================================
+    // OUTPUT: submitDataString(studentCode, qCode, data)
+    // Doi ham nay neu bai khac yeu cau kieu output khac.
+    // ============================================================
+    static void submitDataString(
+            String studentCode,
+            String questionCode,
+            String data) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>"
+                + "<data>" + escapeXml(data)
+                + "</data>";
+
+        callSoap("submitDataString", parametersXml);
+    }
+
+    // ============================================================
+    // UTILITY: Escape ky tu dac biet trong XML
+    // ============================================================
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
     }
 }
 
-3. DATA 
-b. Nhận thông điệp là một chuỗi từ server theo định dạng requestId;n;A1,A2,...An , với
-requestId là chuỗi ngẫu nhiên duy nhất
-n là một số ngẫu nhiên nhỏ hơn 100.
-A1, A2 ... Am (m <= n) là các giá trị ngẫu nhiên nhỏ hơn hoặc bằng n và có thể trùng nhau.
-Ví dụ: requestId;10;2,3,5,6,5
-c. Tìm kiếm các giá trị còn thiếu và gửi lên server theo định dạng requestId;B1,B2,...,Bm
-Ví dụ: requestId;1,4,7,8,9,10
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.HashSet;
 
-public class czv3euUe {
+
+2.Một dịch vụ web (hỗ trợ SOAP version 1.1) được định nghĩa và mô tả trong tệp DataService?wsdl, được triển khai trên server tại URL http://<Exam_IP>:2221/DataService?wsdl để xử lý các bài toán với dữ liệu nguyên thủy.
+
+Yêu cầu: Viết chương trình tại máy trạm (WS client) để giao tiếp với DataService thực hiện các công việc sau:
+
+a. Triệu gọi phương thức getData với tham số đầu vào là mã sinh viên (studentCode) và mã câu hỏi (qCode) để nhận về một danh sách số nguyên (List<Integer>) từ server.
+
+b. Thực hiện tính toán tổng của tất cả các phần tử trong danh sách số nguyên nhận được.
+
+c. Triệu gọi phương thức submitDataInt(String studentCode, String qCode, int data) để gửi kết quả tổng đã tính được trở lại server.
+
+Ví dụ: Nếu mảng số nguyên nhận được từ phương thức getData là [1, 2, 3, 4, 5], chương trình client sẽ tính tổng là 15 và gửi kết quả này trở lại server qua phương thức submitData
+
+d. Kết thúc chương trình client.
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+public class WlJ4tCwZ {
+
+    // ============================================================
+    // 1. CONFIGURATION: Cau hinh Web Service
+    // ============================================================
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/DataService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "WlJ4tCwZ";
+
     public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
-        
-        // Send data
-        String message = ";B23DCCE005;czv3euUe";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2207);
-        client.send(packet);
 
-        // Receive data
-        byte[] buffer = new byte[1024];
-        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-        client.receive(responsePacket);
-        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
-        
-        // Process data
-        String[] parts = response.split(";");
-        String requestId = parts[0].trim();
-        int n = Integer.parseInt(parts[1].trim());
-        String[] nums = parts[2].split(",");
-        HashSet<Integer> numsSet = new HashSet<>();
-        for (String num : nums) {
-            numsSet.add(Integer.parseInt(num.trim()));
+        // ========================================================
+        // 2. INPUT: Lay danh sach so nguyen tu server
+        // ========================================================
+        List<Integer> numbers = getData(STUDENT_CODE, QUESTION_CODE);
+
+        System.out.println("Input data: " + numbers);
+
+        // ========================================================
+        // 3. ALGORITHM: Tinh tong cac phan tu
+        // Sua phan nay theo yeu cau thuat toan cua tung bai.
+        // ========================================================
+        int sum = 0;
+
+        for (Integer number : numbers) {
+            sum += number;
         }
 
-        String res = requestId + ";";
-        for (int i = 1; i <= n; i++) {
-            if (!numsSet.contains(i)) {
-                res += i + ",";
+        System.out.println("Sum: " + sum);
+
+        // ========================================================
+        // 4. OUTPUT: Gui tong ve server bang submitDataInt
+        // ========================================================
+        submitDataInt(STUDENT_CODE, QUESTION_CODE, sum);
+
+        System.out.println("Submission completed.");
+    }
+
+    // ============================================================
+    // SOAP HELPER: Gui SOAP request va nhan XML response
+    // Dung lai ham nay cho cac bai SOAP cung kieu.
+    // ============================================================
+    static Document callSoap(String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(ENDPOINT).openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty(
+                "Content-Type", "text/xml; charset=utf-8");
+
+        connection.setRequestProperty("SOAPAction", "\"\"");
+
+        try {
+            // Gui request den Web Service.
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(requestXml.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            InputStream responseStream =
+                    (statusCode >= 200 && statusCode < 300)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+            if (responseStream == null) {
+                throw new IOException(
+                        "No response body. HTTP status: " + statusCode);
+            }
+
+            // Parse XML response va vo hieu hoa external entities.
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = responseStream) {
+                response = factory.newDocumentBuilder().parse(input);
+            }
+
+            // Kiem tra SOAP Fault.
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: " + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    // ============================================================
+    // INPUT: getData(studentCode, qCode) -> List<Integer>
+    // ============================================================
+    static List<Integer> getData(
+            String studentCode, String questionCode) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>";
+
+        Document response = callSoap("getData", parametersXml);
+
+        NodeList returnNodes =
+                response.getElementsByTagNameNS("*", "return");
+
+        List<Integer> numbers = new ArrayList<>();
+
+        for (int i = 0; i < returnNodes.getLength(); i++) {
+            String value =
+                    returnNodes.item(i).getTextContent().trim();
+
+            if (!value.isEmpty()) {
+                numbers.add(Integer.parseInt(value));
             }
         }
-        res = res.substring(0, res.length() - 1); // Remove trailing comma
-        DatagramPacket resultPacket = new DatagramPacket(res.getBytes(), res.length(), InetAddress.getByName("36.50.135.242"), 2207);
-        client.send(resultPacket);
 
-        client.close();
+        return numbers;
+    }
+
+    // ============================================================
+    // OUTPUT: submitDataInt(studentCode, qCode, data)
+    // ============================================================
+    static void submitDataInt(
+            String studentCode,
+            String questionCode,
+            int data) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>"
+                + "<data>" + data + "</data>";
+
+        callSoap("submitDataInt", parametersXml);
+    }
+
+    // ============================================================
+    // UTILITY: Escape cac ky tu dac biet trong XML
+    // ============================================================
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
     }
 }
 
-4. STRING 
-b. Nhận thông điệp từ server theo định dạng requestId;data
-requestId là một chuỗi ngẫu nhiên duy nhất
-data là chuỗi dữ liệu cần xử lý
-c. Xử lý chuẩn hóa chuỗi đã nhận thành theo nguyên tắc
-Ký tự đầu tiên của từng từ trong chuỗi là in hoa
-Các ký tự còn lại của chuỗi là in thường Gửi thông điệp chứa chuỗi đã được chuẩn hóa lên server theo định dạng requestId;data
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 
-public class cfXBFx5T {
+
+
+3.Một dịch vụ web (hỗ trợ SOAP version 1.1) được định nghĩa và mô tả trong tệp CharacterService.wsdl, được triển khai trên server tại URL http://<Exam_IP>:2221/CharacterService?wsdl để xử lý các bài toán về chuỗi và ký tự.
+
+Yêu cầu: Viết chương trình tại máy trạm (WS client) để giao tiếp với CharacterService thực hiện các công việc sau:
+
+a. Triệu gọi phương thức requestCharacter với tham số đầu vào là mã sinh viên (studentCode) và mã câu hỏi (qCode) để nhận về một danh sách ký tự (List<Integer>) từ server.
+
+b. Thực hiện xoay vòng các ký tự trong danh sách theo chiều phải, số lần xoay vòng bằng đúng giá trị nguyên trong bảng mã ASCII của ký tự đầu tiên.
+
+c. Triệu gọi phương thức submitCharacterCharArray(String studentCode, String qCode, List<Integer> data) để gửi mảng ký tự đã xoay vòng trở lại server.
+
+Ví dụ: Nếu mảng ký tự nhận được từ phương thức requestCharacter là ['a', 'b', 'c', 'd'], giá trị nguyên của ký tự 'a' trong bảng mã ASCII là 97, thực hiện xoay vòng phải 97 lần sẽ trả lại mảng ['d', 'a', 'b', 'c']. Mảng này sẽ được gửi lại server qua phương thức submitCharacterCharArray.
+
+d. Kết thúc chương trình client.
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+public class dkjD4Jct {
+
+    // ============================================================
+    // 1. CONFIGURATION: Cau hinh Web Service
+    // ============================================================
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/CharacterService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "dkjD4Jct";
+
     public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
 
-        //Send data
-        String message = ";B23DCCE005;cfXBFx5T";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2208);
-        client.send(packet);
+        // ========================================================
+        // 2. INPUT: Nhan danh sach ma ky tu tu server
+        // ========================================================
+        List<Integer> characters =
+                requestCharacter(STUDENT_CODE, QUESTION_CODE);
 
-        // Receive data
-        byte[] buffer = new byte[1024];
-        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-        client.receive(responsePacket);
-        String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
+        System.out.println("Input data: " + characters);
 
-        //Process data
-        String[] parts = response.split(";");
-        String requestID = parts[0].trim();
-        String data = parts[1].trim();
-
-        String[] arr = data.split(" ");
-        for(int i = 0; i < arr.length; i++) {
-            arr[i] = arr[i].substring(0, 1).toUpperCase() + arr[i].substring(1).toLowerCase();
+        // ========================================================
+        // 3. ALGORITHM: Xoay vong phai theo ma ASCII ky tu dau tien
+        // Collections.rotate(list, k) xoay phai k vi tri.
+        // So lan xoay tuong duong voi ma ASCII cua phan tu dau tien.
+        // ========================================================
+        if (!characters.isEmpty()) {
+            int rotations = characters.get(0);
+            Collections.rotate(characters, rotations);
         }
-        String result = requestID + ";" + String.join(" ", arr);
 
-        DatagramPacket resultPacket = new DatagramPacket(result.getBytes(), result.length(), InetAddress.getByName("36.50.135.242"), 2208);
-        client.send(resultPacket);
+        System.out.println("Result: " + characters);
 
-        client.close();
+        // ========================================================
+        // 4. OUTPUT: Gui danh sach da xoay ve server
+        // ========================================================
+        submitCharacterCharArray(
+                STUDENT_CODE, QUESTION_CODE, characters);
+
+        System.out.println("Submission completed.");
+    }
+
+    // ============================================================
+    // SOAP HELPER: Gui SOAP request va nhan XML response
+    // Tai su dung cho cac operation cua Web Service.
+    // ============================================================
+    static Document callSoap(String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(ENDPOINT).openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty(
+                "Content-Type", "text/xml; charset=utf-8");
+
+        connection.setRequestProperty("SOAPAction", "\"\"");
+
+        try {
+            // Gui SOAP request den server.
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(requestXml.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            InputStream responseStream =
+                    (statusCode >= 200 && statusCode < 300)
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+            if (responseStream == null) {
+                throw new IOException(
+                        "No response body. HTTP status: " + statusCode);
+            }
+
+            // Doc XML response va ngan XML external entity attacks.
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = responseStream) {
+                response = factory.newDocumentBuilder().parse(input);
+            }
+
+            // Kiem tra SOAP Fault.
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: " + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    // ============================================================
+    // INPUT: requestCharacter(studentCode, qCode) -> List<Integer>
+    // Cac so nguyen bieu dien ma ky tu.
+    // ============================================================
+    static List<Integer> requestCharacter(
+            String studentCode, String questionCode) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>";
+
+        Document response =
+                callSoap("requestCharacter", parametersXml);
+
+        NodeList returnNodes =
+                response.getElementsByTagNameNS("*", "return");
+
+        List<Integer> characters = new ArrayList<>();
+
+        for (int i = 0; i < returnNodes.getLength(); i++) {
+            String value =
+                    returnNodes.item(i).getTextContent().trim();
+
+            if (!value.isEmpty()) {
+                characters.add(Integer.parseInt(value));
+            }
+        }
+
+        return characters;
+    }
+
+    // ============================================================
+    // OUTPUT: submitCharacterCharArray(studentCode, qCode, data)
+    // Gui tung phan tu trong List<Integer> bang the <data>.
+    // ============================================================
+    static void submitCharacterCharArray(
+            String studentCode,
+            String questionCode,
+            List<Integer> data) throws Exception {
+
+        StringBuilder parametersXml = new StringBuilder();
+
+        parametersXml.append(
+                "<studentCode>").append(escapeXml(studentCode))
+                .append("</studentCode>");
+
+        parametersXml.append(
+                "<qCode>").append(escapeXml(questionCode))
+                .append("</qCode>");
+
+        for (Integer character : data) {
+            parametersXml.append("<data>")
+                    .append(character)
+                    .append("</data>");
+        }
+
+        callSoap(
+                "submitCharacterCharArray",
+                parametersXml.toString());
+    }
+
+    // ============================================================
+    // UTILITY: Xu ly ky tu dac biet trong XML
+    // ============================================================
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
     }
 }
-5. Object
-b. Nhận thông điệp chứa: 08 byte đầu chứa chuỗi requestId, các byte còn lại chứa một đối tượng là thể hiện của lớp Student từ server. Trong đó, các thông tin được thiết lập gồm id và name.
-c. Yêu cầu:
-Chuẩn hóa tên theo quy tắc: Chữ cái đầu tiên in hoa, các chữ cái còn lại in thường và gán lại thuộc tính name của đối tượng
-Tạo email ptit.edu.vn từ tên người dùng bằng cách lấy tên và các chữ cái bắt đầu của họ và tên đệm.
-Ví dụ: nguyen van tuan nam -> namnvt@ptit.edu.vn. Gán giá trị này cho thuộc tính email của đối tượng nhận được
-Gửi thông điệp chứa đối tượng xử lý ở bước c lên Server với cấu trúc: 08 byte đầu chứa chuỗi requestId và các byte còn lại chứa đối tượng Student đã được sửa đổi.
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 
-import UDP.Student;
 
-public class Uft7BuJX {
+4.Một dịch vụ web (hỗ trợ SOAP version 1.1) được định nghĩa và mô tả trong tệp ObjectService.wsdl, được triển khai trên server tại URL http://<Exam_IP>:2221/ObjectService?wsdl để xử lý các bài toán với đối tượng.
+
+Yêu cầu: Viết chương trình tại máy trạm (WS client) để giao tiếp với ObjectService thực hiện các công việc sau:
+
+a. Triệu gọi phương thức requestListEmployeeY với tham số đầu vào là mã sinh viên (studentCode) và mã câu hỏi (qCode) để nhận về một danh sách đối tượng EmployeeY từ server. Mỗi đối tượng EmployeeY có các thuộc tính:
+
+name: kiểu String, đại diện cho tên của nhân viên.
+startDate: kiểu Date, đại diện cho ngày bắt đầu làm việc của nhân viên.
+b. Sắp xếp danh sách EmployeeY theo thứ tự thâm niên từ cao đến thấp (người có ngày bắt đầu làm việc sớm nhất sẽ đứng đầu danh sách).
+
+Nếu hai nhân viên có cùng ngày bắt đầu làm việc, giữ nguyên thứ tự ban đầu của họ trong danh sách.
+
+c. Triệu gọi phương thức submitListEmployeeY(String studentCode, String qCode, List<EmployeeY> data) để gửi danh sách nhân viên đã sắp xếp trở lại server.
+
+d. Kết thúc chương trình client.
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class eU8pVMZh {
+
+    // ============================================================
+    // 1. CONFIGURATION: Cau hinh Web Service
+    // ============================================================
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/ObjectService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "eU8pVMZh";
+
     public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
 
-        // Send data
-        String message = ";B23DCCE005;Uft7BuJX";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2209);
-        client.send(packet);
+        // ========================================================
+        // 2. INPUT: Lay danh sach EmployeeY tu server
+        // ========================================================
+        List<EmployeeY> employees =
+                requestListEmployeeY(STUDENT_CODE, QUESTION_CODE);
 
-        // Receive data
-        byte[] buffer = new byte[4096];
-        DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-        client.receive(responsePacket);
-        String requestId = new String(responsePacket.getData(), 0, 8);
-        ByteArrayInputStream bis = new ByteArrayInputStream(
-        responsePacket.getData(),
-        8,
-        responsePacket.getLength() - 8);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        Student student = (Student) ois.readObject();
+        System.out.println("Number of employees: " + employees.size());
 
-        //Process data
-        String name = student.getName();
-        System.err.println(name);
-        String[] arr = name.split(" ");
-        for(int i = 0; i < arr.length; i++){
-            arr[i] = arr[i].substring(0,1).toUpperCase() + arr[i].substring(1).toLowerCase();
+        // ========================================================
+        // 3. ALGORITHM: Sap xep tham nien giam dan
+        // Ngay bat dau som hon dung truoc.
+        // List.sort la stable sort: ngay bang nhau giu thu tu cu.
+        // ========================================================
+        employees.sort(
+                (a, b) -> Long.compare(a.startDateMillis, b.startDateMillis)
+        );
+
+        for (EmployeeY employee : employees) {
+            System.out.println(
+                    employee.name + " | " + employee.startDate
+            );
         }
-        student.setName(String.join(" ", arr));
 
-        StringBuilder email = new StringBuilder();
-        for(int i = 0; i < arr.length - 1; i++){
-            email.append(arr[i].substring(0,1).toLowerCase());
+        // ========================================================
+        // 4. OUTPUT: Gui danh sach da sap xep ve server
+        // ========================================================
+        submitListEmployeeY(
+                STUDENT_CODE, QUESTION_CODE, employees);
+
+        System.out.println("Submission completed.");
+    }
+
+    // ============================================================
+    // DATA MODEL: EmployeeY
+    // Luu ten, ngay bat dau ban dau va gia tri de sap xep.
+    // ============================================================
+    static class EmployeeY {
+        String name;
+        String startDate;
+        long startDateMillis;
+
+        EmployeeY(String name, String startDate) throws Exception {
+            this.name = name;
+            this.startDate = startDate;
+            this.startDateMillis = parseDate(startDate);
         }
-        email.append("@ptit.edu.vn");
-        email.insert(0, arr[arr.length - 1].toLowerCase());
-        student.setEmail(email.toString());
+    }
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(student);
-        oos.flush();
+    // ============================================================
+    // DATE HELPER: Chuyen XML date/dateTime thanh timestamp
+    // Ho tro cac gia tri ngay theo dinh dang XML Schema.
+    // ============================================================
+    static long parseDate(String value) throws Exception {
+        XMLGregorianCalendar calendar =
+                DatatypeFactory.newInstance()
+                        .newXMLGregorianCalendar(value);
 
-        byte[] studentBytes = bos.toByteArray();
-        byte[] requestIdBytes = requestId.getBytes();
+        return calendar.toGregorianCalendar()
+                .getTimeInMillis();
+    }
 
-        byte[] data = new byte[8 + studentBytes.length];
+    // ============================================================
+    // SOAP HELPER: Gui SOAP request va nhan XML response
+    // ============================================================
+    static Document callSoap(
+            String operation, String parametersXml) throws Exception {
 
-        System.arraycopy(requestIdBytes, 0, data, 0, 8);
-        System.arraycopy(studentBytes, 0, data, 8, studentBytes.length);
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
 
-        DatagramPacket resPacket = new DatagramPacket(data, data.length,InetAddress.getByName("36.50.135.242"), 2209);
-        client.send(resPacket);
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(ENDPOINT).openConnection();
 
-        client.close();
+        connection.setRequestMethod("POST");
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty(
+                "Content-Type", "text/xml; charset=utf-8");
+        connection.setRequestProperty("SOAPAction", "\"\"");
+
+        try {
+            // Gui request den server.
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(
+                        requestXml.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            InputStream responseStream =
+                    statusCode >= 200 && statusCode < 300
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+            if (responseStream == null) {
+                throw new IOException(
+                        "No response body. HTTP status: " + statusCode);
+            }
+
+            // Parse XML response va chan external entities.
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = responseStream) {
+                response = factory.newDocumentBuilder().parse(input);
+            }
+
+            // Kiem tra SOAP Fault.
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: " + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+    // ============================================================
+    // XML HELPER: Lay text cua mot phan tu con truc tiep
+    // So sanh local name de ho tro ca element co namespace.
+    // ============================================================
+    static String getChildText(Element parent, String wantedName) {
+        NodeList children = parent.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                String localName = element.getLocalName();
+
+                if (localName == null) {
+                    localName = element.getNodeName();
+                    int colon = localName.indexOf(':');
+
+                    if (colon >= 0) {
+                        localName = localName.substring(colon + 1);
+                    }
+                }
+
+                if (wantedName.equals(localName)) {
+                    return element.getTextContent().strip();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // ============================================================
+    // INPUT: requestListEmployeeY(studentCode, qCode)
+    // Doc cac object co hai truong name va startDate.
+    // ============================================================
+    static List<EmployeeY> requestListEmployeeY(
+            String studentCode, String questionCode) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(questionCode)
+                + "</qCode>";
+
+        Document response =
+                callSoap("requestListEmployeeY", parametersXml);
+
+        List<EmployeeY> employees = new ArrayList<>();
+        NodeList elements = response.getElementsByTagName("*");
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+
+            if (!(node instanceof Element)) {
+                continue;
+            }
+
+            Element element = (Element) node;
+
+            String name = getChildText(element, "name");
+            String startDate = getChildText(element, "startDate");
+
+            // Chi nhan phan tu dai dien cho EmployeeY.
+            if (name != null && startDate != null) {
+                employees.add(new EmployeeY(name, startDate));
+            }
+        }
+
+        return employees;
+    }
+
+    // ============================================================
+    // OUTPUT: submitListEmployeeY(studentCode, qCode, data)
+    // Moi EmployeeY duoc gui voi name va startDate.
+    // ============================================================
+    static void submitListEmployeeY(
+            String studentCode,
+            String questionCode,
+            List<EmployeeY> employees) throws Exception {
+
+        StringBuilder parametersXml = new StringBuilder();
+
+        parametersXml.append("<studentCode>")
+                .append(escapeXml(studentCode))
+                .append("</studentCode>");
+
+        parametersXml.append("<qCode>")
+                .append(escapeXml(questionCode))
+                .append("</qCode>");
+
+        for (EmployeeY employee : employees) {
+            parametersXml.append("<data>")
+                    .append("<name>")
+                    .append(escapeXml(employee.name))
+                    .append("</name>")
+                    .append("<startDate>")
+                    .append(escapeXml(employee.startDate))
+                    .append("</startDate>")
+                    .append("</data>");
+        }
+
+        callSoap(
+                "submitListEmployeeY",
+                parametersXml.toString());
+    }
+
+    // ============================================================
+    // UTILITY: Escape cac ky tu dac biet trong XML
+    // ============================================================
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\"", "&quot;")
+                    .replace("'", "&apos;");
     }
 }
-package UDP;
-import java.io.Serializable;
 
-public class Student implements Serializable {
-    private static final long serialVersionUID = 20171107;
 
-    private String id;
-    private String code;
-    private String name;
-    private String email;
 
-    public Student(String id, String code, String name, String email) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.email = email;
-    }
-    public Student(String code) {
-        this.code = code;
-    }
-    
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getCode() {
-        return code;
-    }
-    public void setCode(String code) {
-        this.code = code;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
+
+
+5. Một dịch vụ web (hỗ trợ SOAP version 1.1) được định nghĩa và mô tả trong tệp ObjectService.wsdl, được triển khai trên server tại URL http://<Exam_IP>:2221/ObjectService?wsdl để xử lý các bài toán với đối tượng.
+
+Yêu cầu: Viết chương trình tại máy trạm (WS client) để giao tiếp với ObjectService thực hiện các công việc sau:
+
+a. Triệu gọi phương thức requestListCustomer với tham số đầu vào là mã sinh viên (studentCode) và mã câu hỏi (qCode) để nhận về danh sách đối tượng Customer từ server. Mỗi đối tượng Customer có các thuộc tính:
+
+customerId: kiểu String, đại diện cho mã khách hàng.
+location: kiểu String, đại diện cho địa điểm của khách hàng.
+purchaseCount: kiểu int, đại diện cho số lần mua hàng của khách hàng.
+totalSpent: kiểu float, đại diện cho tổng số tiền đã chi tiêu của khách hàng.
+b. Lọc và giữ lại các khách hàng có totalSpent lớn hơn 5000 và có purchaseCount từ 5 trở lên.
+
+c. Triệu gọi phương thức submitListCustomer(String studentCode, String qCode, List<Customer> customers) để gửi danh sách các khách hàng tiềm năng trở lại server.
+
+d. Kết thúc chương trình client.
+
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class rgiiqtqm {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/ObjectService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "rgiiqtqm";
+
+    static class Customer {
+        String customerId;
+        String location;
+        int purchaseCount;
+        float totalSpent;
+
+        Customer(String customerId, String location,
+                 int purchaseCount, float totalSpent) {
+            this.customerId = customerId;
+            this.location = location;
+            this.purchaseCount = purchaseCount;
+            this.totalSpent = totalSpent;
+        }
     }
 
-    @Override 
-    public String toString() {
-        return "Student [id=" + id + ", code=" + code + ", name=" + name + ", email=" + email + "]";
-    }
-}
-
-6. Object
-import UDP.Customer;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-
-public class q6i3yiGQv {
     public static void main(String[] args) throws Exception {
-        DatagramSocket client = new DatagramSocket();
+        List<Customer> customers =
+                requestListCustomer(STUDENT_CODE, QUESTION_CODE);
 
-        // Send data
-        String message = ";B23DCCE005;6i3yiGQv";
-        DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), InetAddress.getByName("36.50.135.242"), 2209);
-        client.send(packet);
+        List<Customer> result = new ArrayList<>();
 
-        // Receive data
-        byte[] bytes = new byte[4096];
-        DatagramPacket responsePacket = new DatagramPacket(bytes, bytes.length);
-        client.receive(responsePacket);
-
-        String requestID = new String(responsePacket.getData(), 0, 8);
-        ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 8, responsePacket.getLength() - 8);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        Customer customer = (Customer) ois.readObject();
-
-        // Process data
-        String name = customer.getName();
-        String dob = customer.getDayOfBirth();
-        String[] arr = name.split(" ");
-
-        // a
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < arr.length - 1; i++){
-            sb.append(arr[i].substring(0,1).toUpperCase() + arr[i].substring(1).toLowerCase() + " ");
-        }
-        sb.insert(0, arr[arr.length - 1].toUpperCase() + ", ");
-        customer.setName(sb.toString().trim());
-
-        // b
-        String[] Date = dob.split("-");
-        customer.setDayOfBirth(Date[1] + "/" + Date[0] + "/" + Date[2]);
-
-        // c
-        sb = new StringBuilder();
-        for(int i = 0; i < arr.length - 1; i++){
-            sb.append(arr[i].toLowerCase().charAt(0));
-        }
-        sb.append(arr[arr.length - 1].toLowerCase());
-        customer.setUserName(sb.toString().trim());
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(customer);
-        oos.flush();
-        
-        byte[] requestIdBytes = requestID.getBytes();
-        byte[] customerBytes = baos.toByteArray();
-        byte[] data = new byte[8 + customerBytes.length];
-        System.arraycopy(requestIdBytes, 0, data, 0, 8);
-        System.arraycopy(customerBytes,  0, data, 8, customerBytes.length);
-
-        DatagramPacket result = new DatagramPacket(data, data.length, InetAddress.getByName("36.50.135.242"), 2209);
-        client.send(result);
-
-        client.close();
+        for (Customer customer : customers) {
+    if (customer.totalSpent > 500.0f
+            && customer.purchaseCount >= 3) {
+        result.add(customer);
     }
 }
 
-package UDP;
+        System.out.println("Input customer count: " + customers.size());
+        System.out.println("Qualified customer count: " + result.size());
 
-import java.io.Serializable;
+        for (Customer customer : result) {
+            System.out.println(
+                    customer.customerId + ";"
+                    + customer.location + ";"
+                    + customer.purchaseCount + ";"
+                    + customer.totalSpent
+            );
+        }
 
-public class Customer implements Serializable {
-    private static final long serialVersionUID = 20151107;
+        submitListCustomer(STUDENT_CODE, QUESTION_CODE, result);
 
-    private String id;
-    private String code;
-    private String name;
-    private String dayOfBirth;
-    private String userName;
-    
-    Customer(String id, String code, String name, String dayOfBirth, String userName) {
-        this.id = id;
-        this.code = code;
-        this.name = name;
-        this.dayOfBirth = dayOfBirth;
-        this.userName = userName;
+        System.out.println("Submission completed.");
     }
-    public void setId(String id) {
-        this.id = id;
+
+    static Document callSoap(
+            String operation, String parametersXml) throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(ENDPOINT).openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty(
+                "Content-Type", "text/xml; charset=utf-8");
+        connection.setRequestProperty("SOAPAction", "\"\"");
+
+        try {
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(requestXml.getBytes(StandardCharsets.UTF_8));
+            }
+
+            int statusCode = connection.getResponseCode();
+
+            InputStream stream = statusCode >= 200 && statusCode < 300
+                    ? connection.getInputStream()
+                    : connection.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder().parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: " + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException("HTTP status: " + statusCode);
+            }
+
+            return response;
+        } finally {
+            connection.disconnect();
+        }
     }
-    public String getId() {
-        return id;
+
+    static String getChildText(Element parent, String wantedName) {
+        NodeList children = parent.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+
+            if (!(node instanceof Element)) {
+                continue;
+            }
+
+            Element element = (Element) node;
+            String localName = element.getLocalName();
+
+            if (localName == null) {
+                localName = element.getNodeName();
+                int colon = localName.indexOf(':');
+
+                if (colon >= 0) {
+                    localName = localName.substring(colon + 1);
+                }
+            }
+
+            if (wantedName.equals(localName)) {
+                return element.getTextContent().trim();
+            }
+        }
+
+        return null;
     }
-    public void setCode(String code) {
-        this.code = code;
+
+    static List<Customer> requestListCustomer(
+            String studentCode, String qCode) throws Exception {
+
+        String parametersXml =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode) + "</qCode>";
+
+        Document response =
+                callSoap("requestListCustomer", parametersXml);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        List<Customer> customers = new ArrayList<>();
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+
+            if (!(node instanceof Element)) {
+                continue;
+            }
+
+            Element element = (Element) node;
+
+            String customerId = getChildText(element, "customerId");
+            String location = getChildText(element, "location");
+            String purchaseCountText =
+                    getChildText(element, "purchaseCount");
+            String totalSpentText =
+                    getChildText(element, "totalSpent");
+
+            if (customerId != null && location != null
+                    && purchaseCountText != null
+                    && totalSpentText != null) {
+
+                customers.add(new Customer(
+                        customerId,
+                        location,
+                        Integer.parseInt(purchaseCountText),
+                        Float.parseFloat(totalSpentText)
+                ));
+            }
+        }
+
+        return customers;
     }
-    public String getCode() {
-        return code;
+
+    static void submitListCustomer(
+            String studentCode, String qCode,
+            List<Customer> customers) throws Exception {
+
+        StringBuilder parametersXml = new StringBuilder();
+
+        parametersXml.append("<studentCode>")
+                .append(escapeXml(studentCode))
+                .append("</studentCode>");
+
+        parametersXml.append("<qCode>")
+                .append(escapeXml(qCode))
+                .append("</qCode>");
+
+        for (Customer customer : customers) {
+            parametersXml.append("<data>")
+                    .append("<customerId>")
+                    .append(escapeXml(customer.customerId))
+                    .append("</customerId>")
+                    .append("<location>")
+                    .append(escapeXml(customer.location))
+                    .append("</location>")
+                    .append("<purchaseCount>")
+                    .append(customer.purchaseCount)
+                    .append("</purchaseCount>")
+                    .append("<totalSpent>")
+                    .append(Float.toString(customer.totalSpent))
+                    .append("</totalSpent>")
+                    .append("</data>");
+        }
+
+        callSoap("submitListCustomer", parametersXml.toString());
     }
-    public void setName(String name) {
-        this.name = name;
+
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
-    public String getName() {
-        return name;
+}
+
+
+
+6.Một dịch vụ web hỗ trợ SOAP version 1.1 được định nghĩa trong DataService?wsdl và triển khai tại http://<Exam_IP>:2221/DataService?wsdl.
+
+Yêu cầu
+a. Sử dụng mã sinh viên và mã câu hỏi làm tham số khi gọi các phương thức SOAP. Ví dụ: studentCode="B15DCCN999", qCode="A1B2C3D4".
+
+b. Triệu gọi phương thức getData(studentCode, qCode) để nhận về một danh sách số nguyên List<Integer> từ server.
+
+c. Đếm số lượng phần tử chẵn và số lượng phần tử lẻ trong danh sách.
+
+d. Triệu gọi submitDataStringArray(studentCode, qCode, data) để gửi danh sách chuỗi gồm EVEN=<n> và ODD=<m> về server.
+
+e. Đóng kết nối hoặc kết thúc client sau khi nộp kết quả.
+
+Ví dụ: nếu dữ liệu nhận được là [652, 139, 822, 95, 755, 70, 809, 165, 580, 514, 921, 995, 97, 988, 666, 654] thì dữ liệu nộp lại là [EVEN=8, ODD=8].
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class Z7yvuyS3 {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/DataService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "Z7yvuyS3";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Lay danh sach so nguyen
+            List<Integer> numbers = getData(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            System.out.println("Input: " + numbers);
+
+            // 2. Dem so chan va so le
+            int even = 0;
+            int odd = 0;
+
+            for (int number : numbers) {
+                if (number % 2 == 0) {
+                    even++;
+                } else {
+                    odd++;
+                }
+            }
+
+            // 3. Tao ket qua String[]
+            String[] result = {
+                "EVEN=" + even,
+                "ODD=" + odd
+            };
+
+            System.out.println("Output: "
+                    + Arrays.toString(result));
+
+            // 4. Gui ket qua len server
+            submitDataStringArray(
+                    STUDENT_CODE, QUESTION_CODE, result);
+
+            System.out.println("Submission completed.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    public void setDayOfBirth(String dayOfBirth) {
-        this.dayOfBirth = dayOfBirth;
+
+    // ==================================================
+    // SOAP HELPER
+    // ==================================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int status = conn.getResponseCode();
+
+            InputStream stream =
+                    status >= 200 && status < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException("HTTP status: " + status);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException("SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (status < 200 || status >= 300) {
+                throw new IOException("HTTP status: " + status);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
     }
-    public String getDayOfBirth() {
-        return dayOfBirth;
+
+    // ==================================================
+    // INPUT: getData(studentCode, qCode)
+    // ==================================================
+    static List<Integer> getData(
+            String studentCode, String qCode)
+            throws Exception {
+
+        String params =
+                "<studentCode>" + studentCode + "</studentCode>"
+                + "<qCode>" + qCode + "</qCode>";
+
+        Document response = callSoap("getData", params);
+
+        List<Integer> numbers = new ArrayList<>();
+
+        // Doc cac phan tu return trong SOAP response
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            String value = elements.item(i)
+                    .getTextContent().trim();
+
+            if (!value.isEmpty()) {
+                numbers.add(Integer.parseInt(value));
+            }
+        }
+
+        return numbers;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+
+    // ==================================================
+    // OUTPUT: submitDataStringArray
+    // ==================================================
+    static void submitDataStringArray(
+            String studentCode,
+            String qCode,
+            String[] data) throws Exception {
+
+        StringBuilder params = new StringBuilder();
+
+        params.append("<studentCode>")
+                .append(studentCode)
+                .append("</studentCode>");
+
+        params.append("<qCode>")
+                .append(qCode)
+                .append("</qCode>");
+
+        for (String value : data) {
+            params.append("<data>")
+                    .append(value)
+                    .append("</data>");
+        }
+
+        callSoap("submitDataStringArray", params.toString());
     }
-    public String getUserName() {
-        return userName;
+}
+
+
+
+7.Một dịch vụ SOAP CharacterService được triển khai trên server.
+
+WSDL: http://<Exam_IP>:2221/CharacterService?wsdl
+
+Yêu cầu: Viết chương trình Java (SOAP client) thực hiện các công việc sau:
+
+Tạo Web Service Client từ WSDL URL trên (dùng wsimport hoặc NetBeans/IntelliJ Web Service Client wizard).
+
+Gọi phương thức requestString(studentCode, qCode) với qCode = "<qCode trong đề bài>" để nhận về một chuỗi ký tự từ server.
+
+Ví dụ: Server trả về "HelloWorld".
+
+Đảo ngược chuỗi ký tự nhận được.
+
+Ví dụ: "HelloWorld" -> "dlroWolleH".
+
+Gọi phương thức submitString(studentCode, qCode, reversedString) để gửi kết quả trở lại server.
+
+Ví dụ: submitString("B21DCCN001", "<qCode trong đề bài>", "dlroWolleH").
+
+Kết thúc chương trình client. Server trả về status string ("AC" hoặc "WA").
+
+Ví dụ
+
+Input:  ovCLzARFinQhdzF
+Output: FzdhQniFRAzLCvo
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class MRHrWqQi {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/CharacterService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "MRHrWqQi";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Nhan chuoi tu server
+            String input = requestString(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            if (input == null) {
+                System.out.println("Server tra ve NULL!");
+                return;
+            }
+
+            System.out.println("Input: " + input);
+
+            // 2. Dao nguoc chuoi
+            String reversed = new StringBuilder(input)
+                    .reverse().toString();
+
+            System.out.println("Output: " + reversed);
+
+            // 3. Gui ket qua va nhan trang thai
+            String status = submitString(
+                    STUDENT_CODE, QUESTION_CODE, reversed);
+
+            System.out.println("Status: " + status);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    @Override 
-    public String toString() {
-        return "Customer{" + "id=" + id + ", name=" + name + ", dayOfBirth=" + dayOfBirth + ", userName=" + userName + '}';
+
+    // ==================================================
+    // SOAP HELPER
+    // ==================================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int statusCode = conn.getResponseCode();
+
+            InputStream stream =
+                    statusCode >= 200 && statusCode < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException("SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    // ==================================================
+    // INPUT: requestString(studentCode, qCode)
+    // ==================================================
+    static String requestString(
+            String studentCode, String qCode)
+            throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>";
+
+        Document response = callSoap("requestString", params);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return null;
+        }
+
+        return elements.item(0).getTextContent();
+    }
+
+    // ==================================================
+    // OUTPUT: submitString(studentCode, qCode, data)
+    // ==================================================
+    static String submitString(
+            String studentCode,
+            String qCode,
+            String reversedString) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>"
+                + "<data>" + escapeXml(reversedString)
+                + "</data>";
+
+        Document response = callSoap("submitString", params);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return "No status returned";
+        }
+
+        return elements.item(0).getTextContent().trim();
+    }
+
+    // ==================================================
+    // XML ESCAPE
+    // ==================================================
+    static String escapeXml(String value) {
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+}
+
+
+
+
+8.Một dịch vụ SOAP ObjectService được triển khai trên server.
+
+WSDL: http://<Exam_IP>:2221/ObjectService?wsdl
+
+Yêu cầu: Viết chương trình Java (SOAP client) thực hiện các công việc sau:
+
+Tạo Web Service Client từ WSDL URL trên (dùng wsimport hoặc NetBeans/IntelliJ Web Service Client wizard).
+
+Gọi phương thức requestProductY(studentCode, qCode) với qCode = "<qCode trong đề bài>" để nhận về một đối tượng ProductY từ server, có các thuộc tính name, price, taxRate, discount và finalPrice.
+
+Ví dụ: ProductY{name="Laptop", price=1000.0, taxRate=10.0, discount=5.0, finalPrice=0.0}
+
+Tính giá cuối cùng theo công thức:
+
+finalPrice = price * (1 + taxRate / 100) * (1 - discount / 100)
+Ví dụ: price=1000, taxRate=10, discount=5 -> finalPrice = 1000 * 1.10 * 0.95 = 1045.0
+
+Gán finalPrice vào đối tượng ProductY, sau đó gọi submitProductY(studentCode, qCode, productY) để gửi trở lại server.
+
+Ví dụ: submitProductY("B21DCCN001", "<qCode trong đề bài>", updatedProductY).
+
+Kết thúc chương trình client. Server trả về status string ("AC" hoặc "WA").
+
+Ví dụ
+
+Input:  price=770.0;taxRate=16.0;discount=11.0
+Output: 794.95
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class q6StSteFp {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/ObjectService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "6StSteFp";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Nhan ProductY tu server
+            ProductY product = requestProductY(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            System.out.println("Input: " + product);
+
+            // 2. Tinh finalPrice
+            product.finalPrice = product.price
+                    * (1 + product.taxRate / 100.0)
+                    * (1 - product.discount / 100.0);
+
+            System.out.println("Final Price: "
+                    + product.finalPrice);
+
+            // 3. Gui ProductY ve server
+            String status = submitProductY(
+                    STUDENT_CODE, QUESTION_CODE, product);
+
+            System.out.println("Status: " + status);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =============================================
+    // DATA MODEL: ProductY
+    // =============================================
+    static class ProductY {
+        String name;
+        double price;
+        double taxRate;
+        double discount;
+        double finalPrice;
+
+        @Override
+        public String toString() {
+            return "ProductY{name=" + name
+                    + ", price=" + price
+                    + ", taxRate=" + taxRate
+                    + ", discount=" + discount
+                    + ", finalPrice=" + finalPrice + "}";
+        }
+    }
+
+    // =============================================
+    // SOAP HELPER
+    // =============================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int status = conn.getResponseCode();
+
+            InputStream stream =
+                    status >= 200 && status < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException(
+                        "HTTP status: " + status);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (status < 200 || status >= 300) {
+                throw new IOException(
+                        "HTTP status: " + status);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    // =============================================
+    // XML HELPER
+    // =============================================
+    static String getChildText(
+            Element parent, String name) {
+
+        NodeList children = parent.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+
+            Node node = children.item(i);
+
+            if (node instanceof Element) {
+                Element element = (Element) node;
+
+                String localName = element.getLocalName();
+
+                if (localName == null) {
+                    localName = element.getNodeName();
+
+                    int colon = localName.indexOf(':');
+                    if (colon >= 0) {
+                        localName = localName.substring(colon + 1);
+                    }
+                }
+
+                if (name.equals(localName)) {
+                    return element.getTextContent().trim();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // =============================================
+    // INPUT: requestProductY
+    // =============================================
+    static ProductY requestProductY(
+            String studentCode,
+            String qCode) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>";
+
+        Document response =
+                callSoap("requestProductY", params);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            throw new IOException(
+                    "Server khong tra ve ProductY");
+        }
+
+        Element element = (Element) elements.item(0);
+
+        ProductY product = new ProductY();
+
+        product.name = getChildText(element, "name");
+
+        product.price = Double.parseDouble(
+                getChildText(element, "price"));
+
+        product.taxRate = Double.parseDouble(
+                getChildText(element, "taxRate"));
+
+        product.discount = Double.parseDouble(
+                getChildText(element, "discount"));
+
+        String finalPrice =
+                getChildText(element, "finalPrice");
+
+        product.finalPrice = finalPrice == null
+                ? 0.0
+                : Double.parseDouble(finalPrice);
+
+        return product;
+    }
+
+    // =============================================
+    // OUTPUT: submitProductY
+    // =============================================
+    static String submitProductY(
+            String studentCode,
+            String qCode,
+            ProductY product) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>"
+                + "<data>"
+                + "<name>" + escapeXml(product.name)
+                + "</name>"
+                + "<price>" + product.price
+                + "</price>"
+                + "<taxRate>" + product.taxRate
+                + "</taxRate>"
+                + "<discount>" + product.discount
+                + "</discount>"
+                + "<finalPrice>" + product.finalPrice
+                + "</finalPrice>"
+                + "</data>";
+
+        Document response =
+                callSoap("submitProductY", params);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return "No status returned";
+        }
+
+        return elements.item(0)
+                .getTextContent().trim();
+    }
+
+    // =============================================
+    // XML ESCAPE
+    // =============================================
+    static String escapeXml(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+}
+
+
+
+
+9.Một dịch vụ web hỗ trợ SOAP version 1.1 được định nghĩa trong DataService?wsdl và triển khai tại http://<Exam_IP>:2221/DataService?wsdl.
+
+Yêu cầu
+a. Sử dụng mã sinh viên và mã câu hỏi làm tham số khi gọi các phương thức SOAP. Ví dụ: studentCode="B21DCCN001", qCode="A1B2C3D4".
+
+b. Triệu gọi phương thức getData(studentCode, qCode) để nhận danh sách số nguyên List<Integer> từ server. Ví dụ: [11,12,13,20].
+
+c. Đếm số nguyên tố trong danh sách và tính checksum theo công thức sum((i + 1) * value[i]) mod 100000, với i bắt đầu từ 0.
+
+d. Triệu gọi submitDataString(studentCode, qCode, data) để gửi chuỗi primeCount=<n>;checksum=<m>. Ví dụ: primeCount=2;checksum=154.
+
+e. Kết thúc chương trình client.
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class q8tr7KA2i {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/DataService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "8tr7KA2i";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Nhan danh sach so nguyen tu server
+            List<Integer> numbers = getData(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            System.out.println("Input: " + numbers);
+
+            // 2. Dem so nguyen to va tinh checksum
+            int primeCount = 0;
+            long checksum = 0;
+
+            for (int i = 0; i < numbers.size(); i++) {
+                int value = numbers.get(i);
+
+                if (isPrime(value)) {
+                    primeCount++;
+                }
+
+                checksum = (checksum
+                        + (long) (i + 1) * value) % 100000;
+            }
+
+            // Chuan hoa checksum
+            checksum = (checksum + 100000) % 100000;
+
+            // 3. Tao chuoi ket qua
+            String result = "primeCount=" + primeCount
+                    + ";checksum=" + checksum;
+
+            System.out.println("Output: " + result);
+
+            // 4. Gui ket qua len server
+            String status = submitDataString(
+                    STUDENT_CODE, QUESTION_CODE, result);
+
+            System.out.println("Status: " + status);
+            System.out.println("Submission completed.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =============================================
+    // ALGORITHM: Kiem tra so nguyen to
+    // =============================================
+    static boolean isPrime(int n) {
+        if (n < 2) {
+            return false;
+        }
+
+        if (n == 2) {
+            return true;
+        }
+
+        if (n % 2 == 0) {
+            return false;
+        }
+
+        for (int i = 3; (long) i * i <= n; i += 2) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // =============================================
+    // SOAP HELPER
+    // =============================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int statusCode = conn.getResponseCode();
+
+            InputStream stream =
+                    statusCode >= 200 && statusCode < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    // =============================================
+    // INPUT: getData(studentCode, qCode)
+    // =============================================
+    static List<Integer> getData(
+            String studentCode,
+            String qCode) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>";
+
+        Document response = callSoap("getData", params);
+
+        List<Integer> numbers = new ArrayList<>();
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            throw new IOException(
+                    "Server khong tra ve du lieu!");
+        }
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+
+            NodeList children = node.getChildNodes();
+            boolean hasElementChild = false;
+
+            for (int j = 0; j < children.getLength(); j++) {
+                Node child = children.item(j);
+
+                if (child instanceof Element) {
+                    hasElementChild = true;
+                    String value = child.getTextContent().trim();
+
+                    if (!value.isEmpty()) {
+                        numbers.add(Integer.parseInt(value));
+                    }
+                }
+            }
+
+            if (!hasElementChild) {
+                String value = node.getTextContent().trim();
+
+                if (!value.isEmpty()) {
+                    numbers.add(Integer.parseInt(value));
+                }
+            }
+        }
+
+        if (numbers.isEmpty()) {
+            throw new IOException(
+                    "Danh sach so nguyen rong!");
+        }
+
+        return numbers;
+    }
+
+    // =============================================
+    // OUTPUT: submitDataString
+    // =============================================
+    static String submitDataString(
+            String studentCode,
+            String qCode,
+            String data) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>"
+                + "<data>" + escapeXml(data)
+                + "</data>";
+
+        Document response =
+                callSoap("submitDataString", params);
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return "No status returned";
+        }
+
+        return elements.item(0).getTextContent().trim();
+    }
+
+    // =============================================
+    // XML ESCAPE
+    // =============================================
+    static String escapeXml(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+}
+
+
+
+10.Một dịch vụ web hỗ trợ SOAP version 1.1 được định nghĩa trong CharacterService?wsdl và triển khai tại http://<Exam_IP>:2221/CharacterService?wsdl.
+
+Yêu cầu
+a. Sử dụng mã sinh viên và mã câu hỏi làm tham số khi gọi các phương thức SOAP. Ví dụ: studentCode="B21DCCN001", qCode="BAA62945".
+
+b. Triệu gọi phương thức requestStringArray(studentCode, qCode) để nhận danh sách chuỗi log List<String> từ server. Ví dụ một phần tử: ERROR user=a email=a@example.com phone=0123456789 token=abc.
+
+c. Che email, số điện thoại và token trong từng dòng, sau đó sắp xếp các dòng theo mức ERROR, WARN, INFO.
+
+d. Triệu gọi submitStringArray(studentCode, qCode, data) để gửi danh sách chuỗi đã xử lý. Ví dụ phần tử nộp lại: ERROR user=a email=[EMAIL] phone=[PHONE] token=[TOKEN].
+
+e. Kết thúc chương trình client.
+
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class mVELbWLJ {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/CharacterService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "mVELbWLJ";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Nhan danh sach log
+            List<String> logs = requestStringArray(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            System.out.println("Input:");
+            for (String log : logs) {
+                System.out.println(log);
+            }
+
+            // 2. Che thong tin nhay cam
+            List<String> result = new ArrayList<>();
+
+            for (String log : logs) {
+                String masked = maskLog(log);
+                result.add(masked);
+            }
+
+            // 3. Sap xep ERROR -> WARN -> INFO
+            result.sort(Comparator.comparingInt(
+                    mVELbWLJ::getPriority));
+
+            System.out.println("\nOutput:");
+            for (String log : result) {
+                System.out.println(log);
+            }
+
+            // 4. Gui ket qua ve server
+            String status = submitStringArray(
+                    STUDENT_CODE, QUESTION_CODE, result);
+
+            System.out.println("\nStatus: " + status);
+            System.out.println("Submission completed.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =============================================
+    // ALGORITHM: Che thong tin nhay cam
+    // =============================================
+    static String maskLog(String log) {
+
+        // Che email
+        log = log.replaceAll(
+                "(?i)(\\bemail\\s*=\\s*)\\S+",
+                "$1[EMAIL]");
+
+        // Che so dien thoai
+        log = log.replaceAll(
+                "(?i)(\\bphone\\s*=\\s*)\\S+",
+                "$1[PHONE]");
+
+        // Che token
+        log = log.replaceAll(
+                "(?i)(\\btoken\\s*=\\s*)\\S+",
+                "$1[TOKEN]");
+
+        return log;
+    }
+
+    // =============================================
+    // ALGORITHM: Do uu tien cua log
+    // =============================================
+    static int getPriority(String log) {
+        String level = log.trim().toUpperCase(Locale.ROOT);
+
+        if (level.startsWith("ERROR")) {
+            return 0;
+        }
+        if (level.startsWith("WARN")) {
+            return 1;
+        }
+        if (level.startsWith("INFO")) {
+            return 2;
+        }
+
+        return 3;
+    }
+
+    // =============================================
+    // SOAP HELPER
+    // =============================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int statusCode = conn.getResponseCode();
+
+            InputStream stream =
+                    statusCode >= 200 && statusCode < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    // =============================================
+    // INPUT: requestStringArray
+    // =============================================
+    static List<String> requestStringArray(
+            String studentCode,
+            String qCode) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>";
+
+        Document response =
+                callSoap("requestStringArray", params);
+
+        List<String> logs = new ArrayList<>();
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+            NodeList children = node.getChildNodes();
+
+            boolean hasElementChild = false;
+
+            for (int j = 0; j < children.getLength(); j++) {
+                Node child = children.item(j);
+
+                if (child instanceof Element) {
+                    hasElementChild = true;
+
+                    String value =
+                            child.getTextContent().trim();
+
+                    if (!value.isEmpty()) {
+                        logs.add(value);
+                    }
+                }
+            }
+
+            if (!hasElementChild) {
+                String value =
+                        node.getTextContent().trim();
+
+                if (!value.isEmpty()) {
+                    logs.add(value);
+                }
+            }
+        }
+
+        if (logs.isEmpty()) {
+            throw new IOException(
+                    "Server khong tra ve danh sach log!");
+        }
+
+        return logs;
+    }
+
+    // =============================================
+    // OUTPUT: submitStringArray
+    // =============================================
+    static String submitStringArray(
+            String studentCode,
+            String qCode,
+            List<String> data) throws Exception {
+
+        StringBuilder params = new StringBuilder();
+
+        params.append("<studentCode>")
+                .append(escapeXml(studentCode))
+                .append("</studentCode>");
+
+        params.append("<qCode>")
+                .append(escapeXml(qCode))
+                .append("</qCode>");
+
+        for (String value : data) {
+            params.append("<data>")
+                    .append(escapeXml(value))
+                    .append("</data>");
+        }
+
+        Document response = callSoap(
+                "submitStringArray",
+                params.toString());
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return "No status returned";
+        }
+
+        return elements.item(0)
+                .getTextContent().trim();
+    }
+
+    // =============================================
+    // XML ESCAPE
+    // =============================================
+    static String escapeXml(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
+    }
+}
+
+
+
+
+11.Một dịch vụ web hỗ trợ SOAP version 1.1 được định nghĩa trong ObjectService?wsdl và triển khai tại http://<Exam_IP>:2221/ObjectService?wsdl.
+
+Yêu cầu
+a. Sử dụng mã sinh viên và mã câu hỏi làm tham số khi gọi các phương thức SOAP. Ví dụ: studentCode="B21DCCN001", qCode="5AD2B818".
+
+b. Triệu gọi phương thức requestListCustomer(studentCode, qCode) để nhận danh sách đối tượng Customer từ server. Ví dụ một phần tử: customerId=HC700;purchaseCount=8;totalSpent=9000.
+
+c. Giữ lại khách hàng có purchaseCount >= 6 và totalSpent >= 4000, sau đó sắp xếp giảm dần theo totalSpent; nếu bằng nhau thì sắp xếp tăng dần theo customerId.
+
+d. Triệu gọi submitListCustomer(studentCode, qCode, data) để gửi danh sách Customer đã lọc và sắp xếp. Ví dụ danh sách nộp lại bắt đầu bằng khách hàng có tổng chi tiêu cao nhất.
+
+e. Kết thúc chương trình client.
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.*;
+
+public class dIGNyShc {
+
+    static final String ENDPOINT =
+            "http://36.50.135.242:2221/ObjectService";
+
+    static final String NAMESPACE =
+            "http://soap.server.network.judge.dblab.ptit/";
+
+    static final String STUDENT_CODE = "B23DCCE005";
+    static final String QUESTION_CODE = "dIGNyShc";
+
+    public static void main(String[] args) {
+        try {
+            // 1. Nhan danh sach Customer
+            List<Customer> customers = requestListCustomer(
+                    STUDENT_CODE, QUESTION_CODE);
+
+            System.out.println("Input:");
+            for (Customer c : customers) {
+                System.out.println(c);
+            }
+
+            // 2. Loc khach hang
+            List<Customer> result = new ArrayList<>();
+
+            for (Customer c : customers) {
+                if (c.purchaseCount >= 6
+                        && c.totalSpent.compareTo(
+                                new BigDecimal("4000")) >= 0) {
+                    result.add(c);
+                }
+            }
+
+            // 3. Sap xep totalSpent giam dan
+            // Neu bang nhau: customerId tang dan
+            result.sort((a, b) -> {
+                int cmp = b.totalSpent.compareTo(a.totalSpent);
+
+                if (cmp != 0) {
+                    return cmp;
+                }
+
+                return a.customerId.compareTo(b.customerId);
+            });
+
+            System.out.println("\nOutput:");
+            for (Customer c : result) {
+                System.out.println(c);
+            }
+
+            // 4. Gui danh sach ve server
+            String status = submitListCustomer(
+                    STUDENT_CODE, QUESTION_CODE, result);
+
+            System.out.println("\nStatus: " + status);
+            System.out.println("Submission completed.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // =============================================
+    // DATA MODEL: Customer
+    // =============================================
+    static class Customer {
+        String customerId;
+        int purchaseCount;
+        BigDecimal totalSpent;
+
+        Customer(String customerId,
+                 int purchaseCount,
+                 BigDecimal totalSpent) {
+
+            this.customerId = customerId;
+            this.purchaseCount = purchaseCount;
+            this.totalSpent = totalSpent;
+        }
+
+        @Override
+        public String toString() {
+            return "Customer{customerId=" + customerId
+                    + ", purchaseCount=" + purchaseCount
+                    + ", totalSpent="
+                    + totalSpent.toPlainString() + "}";
+        }
+    }
+
+    // =============================================
+    // SOAP HELPER
+    // =============================================
+    static Document callSoap(
+            String operation, String parametersXml)
+            throws Exception {
+
+        String requestXml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<soapenv:Envelope"
+                + " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\""
+                + " xmlns:tns=\"" + NAMESPACE + "\">"
+                + "<soapenv:Header/>"
+                + "<soapenv:Body>"
+                + "<tns:" + operation + ">"
+                + parametersXml
+                + "</tns:" + operation + ">"
+                + "</soapenv:Body>"
+                + "</soapenv:Envelope>";
+
+        HttpURLConnection conn = (HttpURLConnection)
+                new URL(ENDPOINT).openConnection();
+
+        try {
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setDoOutput(true);
+
+            conn.setRequestProperty(
+                    "Content-Type", "text/xml; charset=utf-8");
+
+            conn.setRequestProperty("SOAPAction", "\"\"");
+
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(requestXml.getBytes(
+                        StandardCharsets.UTF_8));
+            }
+
+            int statusCode = conn.getResponseCode();
+
+            InputStream stream =
+                    statusCode >= 200 && statusCode < 300
+                    ? conn.getInputStream()
+                    : conn.getErrorStream();
+
+            if (stream == null) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            DocumentBuilderFactory factory =
+                    DocumentBuilderFactory.newInstance();
+
+            factory.setNamespaceAware(true);
+
+            factory.setFeature(
+                    "http://apache.org/xml/features/disallow-doctype-decl",
+                    true);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    false);
+
+            factory.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    false);
+
+            Document response;
+
+            try (InputStream input = stream) {
+                response = factory.newDocumentBuilder()
+                        .parse(input);
+            }
+
+            NodeList faults =
+                    response.getElementsByTagNameNS("*", "Fault");
+
+            if (faults.getLength() > 0) {
+                throw new IOException(
+                        "SOAP Fault: "
+                        + faults.item(0).getTextContent());
+            }
+
+            if (statusCode < 200 || statusCode >= 300) {
+                throw new IOException(
+                        "HTTP status: " + statusCode);
+            }
+
+            return response;
+
+        } finally {
+            conn.disconnect();
+        }
+    }
+
+    // =============================================
+    // XML HELPER
+    // =============================================
+    static String getChildText(
+            Element parent, String name) {
+
+        NodeList children = parent.getChildNodes();
+
+        for (int i = 0; i < children.getLength(); i++) {
+            Node node = children.item(i);
+
+            if (node instanceof Element) {
+                Element element = (Element) node;
+
+                String localName = element.getLocalName();
+
+                if (localName == null) {
+                    localName = element.getNodeName();
+
+                    int colon = localName.indexOf(':');
+                    if (colon >= 0) {
+                        localName = localName.substring(colon + 1);
+                    }
+                }
+
+                if (name.equals(localName)) {
+                    return element.getTextContent().trim();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // =============================================
+    // INPUT: requestListCustomer
+    // =============================================
+    static List<Customer> requestListCustomer(
+            String studentCode,
+            String qCode) throws Exception {
+
+        String params =
+                "<studentCode>" + escapeXml(studentCode)
+                + "</studentCode>"
+                + "<qCode>" + escapeXml(qCode)
+                + "</qCode>";
+
+        Document response =
+                callSoap("requestListCustomer", params);
+
+        List<Customer> customers = new ArrayList<>();
+
+        NodeList elements =
+                response.getElementsByTagName("*");
+
+        for (int i = 0; i < elements.getLength(); i++) {
+            Node node = elements.item(i);
+
+            if (!(node instanceof Element)) {
+                continue;
+            }
+
+            Element element = (Element) node;
+
+            String customerId =
+                    getChildText(element, "customerId");
+
+            String purchaseCount =
+                    getChildText(element, "purchaseCount");
+
+            String totalSpent =
+                    getChildText(element, "totalSpent");
+
+            if (customerId != null
+                    && purchaseCount != null
+                    && totalSpent != null) {
+
+                Customer customer = new Customer(
+                        customerId,
+                        Integer.parseInt(purchaseCount),
+                        new BigDecimal(totalSpent)
+                );
+
+                customers.add(customer);
+            }
+        }
+
+        return customers;
+    }
+
+    // =============================================
+    // OUTPUT: submitListCustomer
+    // =============================================
+    static String submitListCustomer(
+            String studentCode,
+            String qCode,
+            List<Customer> customers) throws Exception {
+
+        StringBuilder params = new StringBuilder();
+
+        params.append("<studentCode>")
+                .append(escapeXml(studentCode))
+                .append("</studentCode>");
+
+        params.append("<qCode>")
+                .append(escapeXml(qCode))
+                .append("</qCode>");
+
+        for (Customer c : customers) {
+            params.append("<data>")
+                    .append("<customerId>")
+                    .append(escapeXml(c.customerId))
+                    .append("</customerId>")
+                    .append("<purchaseCount>")
+                    .append(c.purchaseCount)
+                    .append("</purchaseCount>")
+                    .append("<totalSpent>")
+                    .append(c.totalSpent.toPlainString())
+                    .append("</totalSpent>")
+                    .append("</data>");
+        }
+
+        Document response = callSoap(
+                "submitListCustomer",
+                params.toString());
+
+        NodeList elements =
+                response.getElementsByTagNameNS("*", "return");
+
+        if (elements.getLength() == 0) {
+            return "No status returned";
+        }
+
+        return elements.item(0).getTextContent().trim();
+    }
+
+    // =============================================
+    // XML ESCAPE
+    // =============================================
+    static String escapeXml(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 }
